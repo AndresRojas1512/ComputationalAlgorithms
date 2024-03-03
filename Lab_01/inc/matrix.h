@@ -2,6 +2,9 @@
 #define MATRIX_H
 
 #include <iostream>
+#include <cmath>
+#include <limits>
+#include <iomanip>
 
 class Matrix
 {
@@ -11,6 +14,7 @@ class Matrix
         double **data;
     public:
         Matrix(int r, int c);
+        Matrix(int r);
         Matrix() = default;
         ~Matrix();
 

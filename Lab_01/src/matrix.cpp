@@ -7,15 +7,31 @@ Matrix::Matrix(int r, int c) : rows(r), cols(c), data(nullptr)
     {
         data[i] = new double [cols];
     }
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            data[i][j] = NAN;
+        }
+    }
+}
+
+Matrix::Matrix(int r) : rows(r), cols(r), data(nullptr)
+{
+    data = new double *[rows];
+    for (int i = 0; i < rows; i++)
+    {
+        data[i] = new double [cols];
+    }
 }
 
 Matrix::~Matrix()
 {
     for (int i = 0; i < rows; i++)
     {
-        delete data[i];
+        delete[] data[i];
     }
-    delete data;
+    delete[] data;
 }
 
 int Matrix::get_rows()
@@ -39,7 +55,7 @@ void Matrix::print()
     {
         for (int j = 0; j < cols; j++)
         {
-            std::cout << data[i][j] << " ";
+            std::cout << std::fixed << std::setprecision(6) << data[i][j] << "    ";
         }
         std::cout << std::endl;
     }

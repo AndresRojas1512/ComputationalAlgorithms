@@ -2,19 +2,11 @@
 #define NEWTON_H
 
 #include <iostream>
+#include <stdexcept>
 #include <vector>
+#include <cmath>
 #include "matrix.h"
 
-class Newton
-{
-    private:
-        int n;
-        Matrix matrix;
-    public:
-        Newton(int n_param, Matrix &matrix_param) : n(n_param), matrix(matrix_param)
-        {
-        }
-        ~Newton() = default;
-};
+void compute_divided_differences(Matrix &matrix, int n);
 
 #endif

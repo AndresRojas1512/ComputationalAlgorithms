@@ -18,6 +18,7 @@ typedef enum error
 } file_error_t;
 
 file_error_t file_parse_newton(Matrix &matrix, const std::string &filename);
+file_error_t file_parse_hermite(Matrix &matrix, const std::string &filename);
 file_error_t file_count_lines(const std::string &filename, int &lines_count);
 
 #endif
