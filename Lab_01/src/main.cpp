@@ -1,13 +1,33 @@
+#include <iostream>
+#include <string>
 #include "matrix.h"
+#include "file.h"
 
 int main(void)
 {
-    Matrix matrix(3, 3);
-    for (int i = 0; i < 3; i++)
+    std::string filename;
+    int n;
+
+    std::cout << "Enter the filename: ";
+    std::cin >> filename;
+
+    std::cout << "Enter n: ";
+    std::cin >> n;
+
+    int lines_count;
+    int exit_code = file_count_lines(filename, lines_count);
+    if (!exit_code)
     {
-        for (int j = 0; j < 3; j++)
+        Matrix newton_table(lines_count, n + 2);
+        std::cout << "Lines count: " << lines_count << std::endl;
+        exit_code = file_parse_newton(newton_table, filename);
+        if (!exit_code)
         {
-            // Working on operator overloading
+            std::cout << "Parsed succesfull" << std::endl;
+        }
+        else
+        {
+            std::cout << "Error parsing" << std::endl;
         }
     }
     return 0;

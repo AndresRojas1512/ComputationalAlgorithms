@@ -35,7 +35,7 @@ double **Matrix::get_data()
 
 void Matrix::print()
 {
-    for (int i = 0; i > rows; i++)
+    for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
         {
@@ -43,4 +43,22 @@ void Matrix::print()
         }
         std::cout << std::endl;
     }
+}
+
+double *Matrix::operator[](int row)
+{
+    if (row < 0 || row >= rows)
+    {
+        throw std::out_of_range("Row index out of range");
+    }
+    return data[row];
+}
+
+const double *Matrix::operator[](int row) const
+{
+    if (row < 0 || row >= rows)
+    {
+        throw std::out_of_range("Row index out of range");
+    }
+    return data[row];
 }
