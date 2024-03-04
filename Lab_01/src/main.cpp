@@ -32,10 +32,13 @@ int main(void)
     init_matrix_vectors(newton_table);
     newton_table.print_cell();
 
-    std::cout << "Div Diff:" << std::endl;
     compute_cells_vectors(newton_table, n);
-    format_cells_vectors(newton_table, n);
+    std::cout << "Cells vector:" << std::endl;
     newton_table.print_cell_vector();
+
+    compute_cells_values(newton_table, n);
+    std::cout << "Cells values:" << std::endl;
+    newton_table.print_cell_value();
 
     return 0;
 }

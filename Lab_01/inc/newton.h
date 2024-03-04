@@ -14,5 +14,6 @@
 void init_matrix_vectors(Matrix &matrix);
 void compute_cells_vectors(Matrix &matrix, int n);
 void format_cells_vectors(Matrix &matrix, int n);
+void compute_cells_values(Matrix &matrix, int n);
 
 #endif
