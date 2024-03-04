@@ -39,8 +39,7 @@ file_error_t file_parse_newton(Matrix &matrix, const std::string &filename)
     return SUCCESS;
 }
 
-file_error_t file_parse_hermite(Matrix &matrix, const std::string &filename, int data_count)
-{
+file_error_t file_parse_hermite(Matrix &matrix, const std::string &filename, int data_count) {
     FILE *file = fopen(filename.c_str(), "r");
     if (!file) {
         return ERROR_CANNOT_OPEN;
@@ -48,41 +47,43 @@ file_error_t file_parse_hermite(Matrix &matrix, const std::string &filename, int
 
     char buffer[BUFFER_SIZE];
 
-    if (!fgets(buffer, sizeof(buffer), file))
-    {
+    // Skip the header
+    if (!fgets(buffer, sizeof(buffer), file)) {
         fclose(file);
         return ERROR_PARSING;
     }
 
-    int currentMatrixRow = 0;
+    int currentMatrixRow = 0; // Track the current row in the matrix to be filled
 
-    while (fgets(buffer, sizeof(buffer), file))
-    {
+    // Read each line from the file
+    while (fgets(buffer, sizeof(buffer), file) && currentMatrixRow < matrix.get_rows()) {
         std::stringstream ss(buffer);
         double x, y;
         char comma;
         
-        if (!(ss >> x >> comma >> y))
-        {
+        if (!(ss >> x >> comma >> y)) {
             fclose(file);
             return ERROR_PARSING;
         }
 
+        // Fill "data_count" times the same row with the current x, y data
         for (int i = 0; i < data_count; ++i)
         {
+            // Check to avoid going out of bounds of the matrix
             if (currentMatrixRow >= matrix.get_rows())
             {
-                fclose(file);
-                return ERROR_PARSING;
+                break; // Stop filling if we've reached the end of the matrix
             }
             matrix[currentMatrixRow][0].value = x;
             matrix[currentMatrixRow][1].value = y;
-            ++currentMatrixRow;
+            ++currentMatrixRow; // Move to the next row in the matrix
         }
     }
+
     fclose(file);
     return SUCCESS;
 }
+
 
 file_error_t file_count_lines(const std::string &filename, int &lines_count)
 {

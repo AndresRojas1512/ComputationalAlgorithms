@@ -29,19 +29,18 @@ int main(void)
     if (exit_code)
         return exit_code;
     std::cout << "Columns: " << columns_count << std::endl;
-    // HERMITE
-    int data_count = columns_count - 1;
-    int row_count = (lines_count - 1) * data_count;
-    int row_blocks = lines_count - 1;
 
-    Matrix hermite_table(row_count, data_count);
+    // HERMITE
+    Matrix hermite_table(n, n + 1);
+    int data_count = columns_count - 1;
     exit_code = file_parse_hermite(hermite_table, filename, data_count);
     if (exit_code)
         return exit_code;
-    std::cout << "Hermite: " << std::endl;
-    hermite_table.print_cell_value();
-    init_hermite_matrix_vectors_blocks(hermite_table, row_blocks, data_count);
-    hermite_table.print_cell_block();
+    init_hermite_matrix_vectors_blocks(hermite_table, data_count);
+    hermite_table.print_cell();
+    compute_hermite_cells_vectors(hermite_table, n);
+    hermite_table.print_cell_vector();
+
     // NEWTON
     // Matrix newton_table(lines_count - 1, n + 2);
     // exit_code = file_parse_newton(newton_table, filename);

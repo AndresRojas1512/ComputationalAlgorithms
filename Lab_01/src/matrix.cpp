@@ -78,7 +78,7 @@ void Matrix::print_cell_block() const
     {
         for (int j = 0; j < cols; j++)
         {
-            std::cout << "Cell[" << i << "][" << j << "]; Block[" << data[i][j].block << "]: ";
+            std::cout << "Cell[" << i << "][" << j << "] Block[" << data[i][j].block << "]: " << "Value: " << data[i][j].value << ", Integers: ";
             for (long unsigned int k = 0; k < data[i][j].integers.size(); k++)
             {
                 std::cout << data[i][j].integers[k] << " ";
