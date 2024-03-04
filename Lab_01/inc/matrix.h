@@ -5,29 +5,35 @@
 #include <cmath>
 #include <limits>
 #include <iomanip>
+#include <vector>
+#include <unordered_map>
+
+class Cell
+{
+    public:
+        double value;
+        std::vector<int> integers;
+        Cell(double val = -1);
+};
 
 class Matrix
 {
     private:
         int rows;
         int cols;
-        double **data;
+        std::vector<std::vector<Cell>> data;
     public:
         Matrix(int r, int c);
-        Matrix(int r);
-        Matrix() = default;
-        ~Matrix();
-
-        int get_rows();
-        int get_cols();
-        double **get_data();
-
-        // Helper methods
-        void print();
-
-        // Operator overloading
-        double *operator[](int row);
-        const double *operator[](int row) const;
+        // Getters
+        Cell &get_cell(int row, int col);
+        const Cell &get_cell(int row, int col) const;
+        int get_rows() const;
+        int get_cols() const;
+        void print_cell() const;
+        void print_cell_value() const;
+        void print_cell_vector() const;
+        std::vector<Cell> &operator[](int index);
+        const std::vector<Cell> &operator[](int index) const;
 };
 
 #endif

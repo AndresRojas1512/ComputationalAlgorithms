@@ -1,6 +1,6 @@
 .PHONY : clean func unit release debug
 CC := g++
-CFLAGS := -std=c++20 -Wall -Werror -pedantic -Wextra -Wvla -Wfloat-equal -Wfloat-conversion
+CFLAGS := -std=c++20 -g3 -Wall -Werror -pedantic -Wextra -Wvla -Wfloat-equal -Wfloat-conversion
 
 INC := inc
 OUT := out
