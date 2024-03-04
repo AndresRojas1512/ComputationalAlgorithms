@@ -1,6 +1,6 @@
 #include "newton.h"
 
-void init_matrix_vectors(Matrix &matrix)
+void init_newton_matrix_vectors(Matrix &matrix)
 {
     for (int i = 0; i < matrix.get_rows(); i++)
     {
@@ -9,7 +9,7 @@ void init_matrix_vectors(Matrix &matrix)
     }
 }
 
-void compute_cells_vectors(Matrix &matrix, int n)
+void compute_newton_cells_vectors(Matrix &matrix, int n)
 {
     for (int col = 2; col < (n + 2); col++)
     {
@@ -30,7 +30,7 @@ void compute_cells_vectors(Matrix &matrix, int n)
     }
 }
 
-void compute_cells_values(Matrix &matrix, int n)
+void compute_newton_cells_values(Matrix &matrix, int n)
 {
     for (int col = 2; col < (n + 2); col++)
     {
@@ -47,7 +47,7 @@ void compute_cells_values(Matrix &matrix, int n)
     }
 }
 
-// void format_cells_vectors(Matrix &matrix, int n)
+// void format_newton_cells_vectors(Matrix &matrix, int n)
 // {
 //     for (int i = 0; i < n; i++) {
 //         for (int j = i + 2; j < n + 1; j++) {

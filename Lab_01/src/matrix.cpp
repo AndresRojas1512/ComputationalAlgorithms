@@ -1,6 +1,6 @@
 #include "matrix.h"
 
-Cell::Cell(double val) : value(val)
+Cell::Cell(double val, int block_param) : value(val), block(block_param)
 {
 }
 
@@ -67,6 +67,23 @@ void Matrix::print_cell_vector() const
             {
                 std::cout << data[i][j].integers[k] << " ";
             }
+        }
+        std::cout << std::endl;
+    }
+}
+
+void Matrix::print_cell_block() const
+{
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            std::cout << "Cell[" << i << "][" << j << "]; Block[" << data[i][j].block << "]: ";
+            for (long unsigned int k = 0; k < data[i][j].integers.size(); k++)
+            {
+                std::cout << data[i][j].integers[k] << " ";
+            }
+            std::cout << "    ";
         }
         std::cout << std::endl;
     }

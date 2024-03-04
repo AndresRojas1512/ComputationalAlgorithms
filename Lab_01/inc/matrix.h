@@ -13,7 +13,8 @@ class Cell
     public:
         double value;
         std::vector<int> integers;
-        Cell(double val = -1);
+        int block;
+        Cell(double val = -1, int block_param = -1);
 };
 
 class Matrix
@@ -32,6 +33,7 @@ class Matrix
         void print_cell() const;
         void print_cell_value() const;
         void print_cell_vector() const;
+        void print_cell_block() const;
         std::vector<Cell> &operator[](int index);
         const std::vector<Cell> &operator[](int index) const;
 };
