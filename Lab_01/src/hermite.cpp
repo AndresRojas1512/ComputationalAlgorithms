@@ -38,3 +38,22 @@ void compute_hermite_cells_vectors(Matrix &matrix, int n)
         }
     }
 }
+
+void compute_hermite_derivatives(Matrix &matrix, Matrix &derivatives, int n)
+{
+    (void) derivatives;
+    int col_index = 0;
+    for (int col = 2; col < (n + 1); col++)
+    {
+        for (int row = 0; row <  (n - 1); row++)
+        {
+            int left_block = matrix[row][col - 1].block;
+            int left_diagonal_block = matrix[row + 1][col - 1].block;
+            if ((left_block == left_diagonal_block) && left_block != -1 && left_diagonal_block != -1)
+            {
+                matrix[row][col].block = left_block;
+            }
+        }
+        col_index++;
+    }
+}

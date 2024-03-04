@@ -84,6 +84,44 @@ file_error_t file_parse_hermite(Matrix &matrix, const std::string &filename, int
     return SUCCESS;
 }
 
+file_error_t file_parse_derivatives(Matrix &matrix_derivatives, const std::string &filename)
+{
+    FILE *file = fopen(filename.c_str(), "r");
+    if (!file)
+    {
+        return ERROR_CANNOT_OPEN;
+    }
+
+    char buffer[BUFFER_SIZE];
+
+    if (!fgets(buffer, sizeof(buffer), file))
+    {
+        fclose(file);
+        return ERROR_PARSING;
+    }
+
+    int currentMatrixRow = 0;
+
+    while (fgets(buffer, sizeof(buffer), file) && currentMatrixRow < matrix_derivatives.get_rows())
+    {
+        std::stringstream ss(buffer);
+        double x, y, ddx, ddx2;
+        char comma;
+        
+        if (!(ss >> x >> comma >> y >> comma >> ddx >> comma >> ddx2))
+        {
+            fclose(file);
+            return ERROR_PARSING;
+        }
+        matrix_derivatives[currentMatrixRow][0].value = ddx;
+        matrix_derivatives[currentMatrixRow][1].value = ddx2;
+        currentMatrixRow++;
+    }
+
+    fclose(file);
+    return SUCCESS;
+}
+
 
 file_error_t file_count_lines(const std::string &filename, int &lines_count)
 {

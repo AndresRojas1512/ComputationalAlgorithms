@@ -32,14 +32,24 @@ int main(void)
 
     // HERMITE
     Matrix hermite_table(n, n + 1);
+    Matrix derivative_table(n, columns_count - 2);
     int data_count = columns_count - 1;
+
     exit_code = file_parse_hermite(hermite_table, filename, data_count);
     if (exit_code)
         return exit_code;
+    
+    exit_code = file_parse_derivatives(derivative_table, filename);
+    if (exit_code)
+        return exit_code;
+    std::cout << "Derivatives: " << std::endl;
+    derivative_table.print_cell_value();
+
     init_hermite_matrix_vectors_blocks(hermite_table, data_count);
-    hermite_table.print_cell();
     compute_hermite_cells_vectors(hermite_table, n);
-    hermite_table.print_cell_vector();
+    
+    Matrix rand(1, 1);
+    compute_hermite_derivatives(hermite_table, rand, n);
 
     // NEWTON
     // Matrix newton_table(lines_count - 1, n + 2);

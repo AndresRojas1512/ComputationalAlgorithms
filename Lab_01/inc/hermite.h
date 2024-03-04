@@ -13,5 +13,6 @@
 
 void init_hermite_matrix_vectors_blocks(Matrix &matrix, int data_count);
 void compute_hermite_cells_vectors(Matrix &matrix, int n);
+void compute_hermite_derivatives(Matrix &matrix, Matrix &derivatives, int n);
 
 #endif
