@@ -47,9 +47,7 @@ int main(void)
 
     init_hermite_matrix_vectors_blocks(hermite_table, data_count);
     compute_hermite_cells_vectors(hermite_table, n);
-    
-    Matrix rand(1, 1);
-    compute_hermite_derivatives(hermite_table, rand, n);
+    compute_hermite_derivatives(hermite_table, derivative_table, n);
 
     // NEWTON
     // Matrix newton_table(lines_count - 1, n + 2);

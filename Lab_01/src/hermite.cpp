@@ -41,8 +41,7 @@ void compute_hermite_cells_vectors(Matrix &matrix, int n)
 
 void compute_hermite_derivatives(Matrix &matrix, Matrix &derivatives, int n)
 {
-    (void) derivatives;
-    int col_index = 0;
+    int derivative_index = 0;
     for (int col = 2; col < (n + 1); col++)
     {
         for (int row = 0; row <  (n - 1); row++)
@@ -52,8 +51,12 @@ void compute_hermite_derivatives(Matrix &matrix, Matrix &derivatives, int n)
             if ((left_block == left_diagonal_block) && left_block != -1 && left_diagonal_block != -1)
             {
                 matrix[row][col].block = left_block;
+                double derivative = derivatives[left_block][derivative_index].value;
+
+                std::cout << "Cell[" << row << "][" << col << "]. Derivative: " << derivative << std::endl;
             }
         }
-        col_index++;
+        derivative_index++;
     }
 }
+

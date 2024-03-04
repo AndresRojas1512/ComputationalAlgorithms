@@ -46,13 +46,3 @@ void compute_newton_cells_values(Matrix &matrix, int n)
         }
     }
 }
-
-// void format_newton_cells_vectors(Matrix &matrix, int n)
-// {
-//     for (int i = 0; i < n; i++) {
-//         for (int j = i + 2; j < n + 1; j++) {
-//             std::cout << "Clearing: [" << i << "][" << j << "]" << std::endl;
-//             matrix[i][j].integers.clear();
-//         }
-//     }
-// }
