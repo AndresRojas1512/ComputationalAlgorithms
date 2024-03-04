@@ -44,19 +44,50 @@ void compute_hermite_derivatives(Matrix &matrix, Matrix &derivatives, int n)
     int derivative_index = 0;
     for (int col = 2; col < (n + 1); col++)
     {
-        for (int row = 0; row <  (n - 1); row++)
+        for (int row = 0; row < (n - 1); row++)
         {
             int left_block = matrix[row][col - 1].block;
             int left_diagonal_block = matrix[row + 1][col - 1].block;
             if ((left_block == left_diagonal_block) && left_block != -1 && left_diagonal_block != -1)
             {
+                int cell_vector_len = matrix[row][col].integers.size();
                 matrix[row][col].block = left_block;
                 double derivative = derivatives[left_block][derivative_index].value;
-
-                std::cout << "Cell[" << row << "][" << col << "]. Derivative: " << derivative << std::endl;
+                double factorial = compute_factorial(cell_vector_len - 1);
+                matrix[row][col].value = derivative / factorial;
+                // std::cout << "Cell[" << row << "][" << col << "]. Derivative: " << derivative << std::endl;
             }
         }
         derivative_index++;
     }
 }
 
+void compute_hermite_cells_values(Matrix &matrix, int n)
+{
+    for (int col = 2; col < (n + 1); col++)
+    {
+        for (int row = 0; row < (n - 1); row++)
+        {
+            if (matrix[row][col].block == -1)
+            {
+                // std::cout << "[" << row << "]" << "[" << col << "]:" << std::endl;
+                // std::cout << "Dividend: " << matrix[row + 1][col - 1].value << " - " << matrix[row][col - 1].value << std::endl;
+                // std::cout << "Divisor: " << matrix[matrix[row][col].integers.back()][X].value << " - " << matrix[matrix[row][col].integers.front()][X].value << std::endl;
+                
+                double dividend = matrix[row + 1][col - 1].value - matrix[row][col - 1].value;
+                double divisor = matrix[matrix[row][col].integers.back()][X].value - matrix[matrix[row][col].integers.front()][X].value;
+                matrix[row][col].value = dividend / divisor;
+            }
+        }
+    }
+}
+
+double compute_factorial(int n)
+{
+    double result = 1.0;
+    for (int i = 2; i <= n; ++i)
+    {
+        result *= i;
+    }
+    return result;
+}

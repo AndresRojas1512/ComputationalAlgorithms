@@ -42,12 +42,14 @@ int main(void)
     exit_code = file_parse_derivatives(derivative_table, filename);
     if (exit_code)
         return exit_code;
-    std::cout << "Derivatives: " << std::endl;
-    derivative_table.print_cell_value();
+    // std::cout << "Derivatives: " << std::endl;
+    // derivative_table.print_cell_value();
 
     init_hermite_matrix_vectors_blocks(hermite_table, data_count);
     compute_hermite_cells_vectors(hermite_table, n);
     compute_hermite_derivatives(hermite_table, derivative_table, n);
+    compute_hermite_cells_values(hermite_table, n);
+    hermite_table.print_cell_value();
 
     // NEWTON
     // Matrix newton_table(lines_count - 1, n + 2);
