@@ -82,6 +82,37 @@ void compute_hermite_cells_values(Matrix &matrix, int n)
     }
 }
 
+void print_hermite_polynomial(const Matrix &hermite_table, int nodes)
+{
+    const double EPSILON = std::numeric_limits<double>::epsilon();
+    std::cout << "The Hermite Interpolation Polynomial is:\n";
+
+    std::cout << std::setw(10) << hermite_table[0][1].value;
+
+    for (int i = 1; i < nodes; ++i)
+    {
+        std::cout << " + " << std::setw(10) << hermite_table[0][i + 1].value;
+
+        for (int j = 0, power = 1; j < i; ++j, ++power) {
+            if (hermite_table[j][0].value >= 0)
+                std::cout << "(x - " << hermite_table[j][0].value << ")";
+            else
+                std::cout << "(x + " << -hermite_table[j][0].value << ")";
+
+            if (j < i - 1 && std::abs(hermite_table[j][0].value - hermite_table[j + 1][0].value) < EPSILON)
+            {
+                std::cout << "^" << power;
+            }
+            else
+            {
+                power = 0;
+            }
+        }
+    }
+
+    std::cout << std::endl;
+}
+
 double compute_factorial(int n)
 {
     double result = 1.0;

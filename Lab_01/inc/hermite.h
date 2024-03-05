@@ -15,6 +15,7 @@ void init_hermite_matrix_vectors_blocks(Matrix &matrix, int data_count);
 void compute_hermite_cells_vectors(Matrix &matrix, int n);
 void compute_hermite_derivatives(Matrix &matrix, Matrix &derivatives, int n);
 void compute_hermite_cells_values(Matrix &matrix, int n);
+void print_hermite_polynomial(const Matrix &hermite_table, int nodes);
 double compute_factorial(int n);
 
 #endif

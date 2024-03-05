@@ -42,31 +42,25 @@ int main(void)
     exit_code = file_parse_derivatives(derivative_table, filename);
     if (exit_code)
         return exit_code;
-    // std::cout << "Derivatives: " << std::endl;
-    // derivative_table.print_cell_value();
 
     init_hermite_matrix_vectors_blocks(hermite_table, data_count);
     compute_hermite_cells_vectors(hermite_table, n);
     compute_hermite_derivatives(hermite_table, derivative_table, n);
     compute_hermite_cells_values(hermite_table, n);
-    hermite_table.print_cell_value();
+    print_hermite_polynomial(hermite_table, n);
+
 
     // NEWTON
     // Matrix newton_table(lines_count - 1, n + 2);
     // exit_code = file_parse_newton(newton_table, filename);
     // if (exit_code)
     //     return exit_code;
-    // std::cout << "Newton:" << std::endl;
+
     // init_newton_matrix_vectors(newton_table);
-    // newton_table.print_cell();
-
     // compute_newton_cells_vectors(newton_table, n);
-    // std::cout << "Cells vector:" << std::endl;
-    // newton_table.print_cell_vector();
-
     // compute_newton_cells_values(newton_table, n);
-    // std::cout << "Cells values:" << std::endl;
-    // newton_table.print_cell_value();
-
+    // double result = interpolate_newton(newton_table, -0.75, n);
+    // std::cout << "Result: " << result << std::endl;
+    // print_newton_polynomial(newton_table, n);
     return 0;
 }

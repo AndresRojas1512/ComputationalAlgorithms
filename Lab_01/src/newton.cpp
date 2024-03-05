@@ -46,3 +46,36 @@ void compute_newton_cells_values(Matrix &matrix, int n)
         }
     }
 }
+
+double interpolate_newton(const Matrix &newton_table, double x, int n)
+{
+    double result = newton_table[0][1].value;
+    double term = 1.0;
+    for (int i = 1; i <= n; ++i)
+    {
+        term *= (x - newton_table[i - 1][0].value);
+        result += newton_table[0][i + 1].value * term;
+    }
+    return result;
+}
+
+void print_newton_polynomial(const Matrix &newton_table, int n)
+{
+    std::cout << "The Newton Interpolation Polynomial of degree " << n << " is:\n";
+
+    std::cout << newton_table[0][1].value;
+
+    for (int i = 1; i <= n; ++i)
+    {
+        std::cout << " + " << newton_table[0][i + 1].value;
+
+        for (int j = 0; j < i; ++j)
+        {
+            if (newton_table[j][0].value >= 0)
+                std::cout << "(x - " << newton_table[j][0].value << ")";
+            else
+                std::cout << "(x + " << -newton_table[j][0].value << ")";
+        }
+    }
+    std::cout << std::endl;
+}
