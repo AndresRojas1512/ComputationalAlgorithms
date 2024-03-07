@@ -148,7 +148,7 @@ int main(void)
                     if (!method_choice)
                     {
                         std::cout << "\tNEWTON" << std::endl;
-                        int standard_degree = 3;
+                        int standard_degree = 4;
                         int y = 0.0;
 
                         Matrix newton_table_base(rows_table, standard_degree + 2);
@@ -176,6 +176,48 @@ int main(void)
                 case 3:
                 {
                     std::cout << "System solving" << std::endl;
+                    std::string filename_fx;
+                    std::string filename_gx;
+                    std::vector<double> results;
+                    int lines_count;
+                    int columns_count;
+
+                    std::cout << "Enter filename_fx: ";
+                    std::cin >> filename_fx;
+
+                    std::cout << "Enter file_gx: ";
+                    std::cin >> filename_gx;
+
+                    exit_code = file_count_lines(filename_fx, lines_count);
+                    if (exit_code)
+                        return exit_code;
+                    exit_code = file_count_columns(filename_fx, columns_count);
+                    if (exit_code)
+                        return exit_code;
+                    
+                    // Prepared data
+                    int rows_table = lines_count - 1;
+
+                    int standard_degree = 4;
+
+                    Matrix newton_table_base_fx(rows_table, standard_degree + 2);
+                    Matrix newton_table_base_gx(rows_table, standard_degree + 2);
+
+                    exit_code = file_parse_newton(newton_table_base_fx, filename_fx); // llega invertido
+                    if (exit_code)
+                        return exit_code;
+                    
+                    exit_code = file_parse_newton(newton_table_base_gx, filename_gx); // llega normal
+                    if (exit_code)
+                        return exit_code;
+                    
+                    std::cout << "Fx:" << std::endl;
+                    newton_table_base_fx.print_cell_value();
+                    std::cout << "Gx:" << std::endl;
+                    newton_table_base_gx.print_cell_value();
+
+                    interpolate_complete_table(newton_table_base_fx, newton_table_base_gx, results, standard_degree);
+
                     break;
                 }
                 default:

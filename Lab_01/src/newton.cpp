@@ -96,10 +96,9 @@ void inverse_table_newton(Matrix &input_table, Matrix &inverse_table)
 
 void interpolate_complete_table(Matrix &f_x, Matrix &g_x, std::vector<double> results, int n)
 {
-    
     for (int i = 0; i < f_x.get_rows(); i++)
     {
-        std::cout << "f_x: " << f_x[i][X].value << ", ";
+        // std::cout << "f_x: " << f_x[i][X].value << ", ";
         Matrix g_x_temp = g_x;
         Matrix div_dif_table(n + 1, n + 2);
         compute_table_interval_newton(g_x_temp, div_dif_table, f_x[i][X].value, n);
@@ -107,7 +106,7 @@ void interpolate_complete_table(Matrix &f_x, Matrix &g_x, std::vector<double> re
         compute_newton_cells_vectors(div_dif_table, n);
         compute_newton_cells_values(div_dif_table, n);
         double result = interpolate_newton(div_dif_table, f_x[i][X].value, n);
-        std::cout << "Result: " << result << std::endl;
+        // std::cout << "Result: " << result << std::endl;
         results.push_back(result);
     }
 }
