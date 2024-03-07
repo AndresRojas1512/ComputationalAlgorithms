@@ -6,6 +6,7 @@
 #include <limits>
 #include <iomanip>
 #include <vector>
+#include <algorithm>
 #include <unordered_map>
 
 class Cell
@@ -25,6 +26,7 @@ class Matrix
         std::vector<std::vector<Cell>> data;
     public:
         Matrix(int r, int c);
+        void sort_by_first_column();
         // Getters
         Cell &get_cell(int row, int col);
         const Cell &get_cell(int row, int col) const;

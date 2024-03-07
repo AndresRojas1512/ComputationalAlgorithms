@@ -36,9 +36,9 @@ void compute_newton_cells_values(Matrix &matrix, int n)
     {
         for (int row = 0; row < n; row++)
         {
-            // std::cout << "[" << row << "]" << "[" << col << "]:" << std::endl;
-            // std::cout << "Dividend: " << matrix[row + 1][col - 1].value << " - " << matrix[row][col - 1].value << std::endl;
-            // std::cout << "Divisor: " << matrix[matrix[row][col].integers.back()][X].value << " - " << matrix[matrix[row][col].integers.front()][X].value << std::endl;
+            std::cout << "[" << row << "]" << "[" << col << "]:" << std::endl;
+            std::cout << "Dividend: " << matrix[row + 1][col - 1].value << " - " << matrix[row][col - 1].value << std::endl;
+            std::cout << "Divisor: " << matrix[matrix[row][col].integers.back()][X].value << " - " << matrix[matrix[row][col].integers.front()][X].value << std::endl;
             
             double dividend = matrix[row + 1][col - 1].value - matrix[row][col - 1].value;
             double divisor = matrix[matrix[row][col].integers.back()][X].value - matrix[matrix[row][col].integers.front()][X].value;
@@ -57,6 +57,34 @@ double interpolate_newton(const Matrix &newton_table, double x, int n)
         result += newton_table[0][i + 1].value * term;
     }
     return result;
+}
+
+void find_interval_containing_x_newton(Matrix &input_matrix, Matrix &output_matrix, double x, int n)
+{
+    n++;
+    input_matrix.sort_by_first_column();
+    
+    int start = 0, end = input_matrix.get_rows(), mid;
+    while (start < end)
+    {
+        mid = start + (end - start) / 2;
+        if (input_matrix[mid][0].value < x)
+            start = mid + 1;
+        else
+            end = mid;
+    }
+
+    start = std::max(0, start - n/2);
+    end = std::min(start + n, input_matrix.get_rows());
+    start = std::max(0, end - n);
+
+    for (int i = start; i < end; ++i)
+    {
+        for (int j = 0; j < input_matrix.get_cols(); ++j)
+        {
+            output_matrix[i-start][j] = input_matrix[i][j];
+        }
+    }
 }
 
 void print_newton_polynomial(const Matrix &newton_table, int n)
@@ -79,3 +107,13 @@ void print_newton_polynomial(const Matrix &newton_table, int n)
     }
     std::cout << std::endl;
 }
+
+void inverse_table_newton(Matrix &input_table, Matrix &inverse_table)
+{
+    for (int i = 0; i < input_table.get_rows(); i++)
+    {
+        inverse_table[i][0].value = input_table[i][1].value;
+        inverse_table[i][1].value = input_table[i][0].value;
+    }
+}
+

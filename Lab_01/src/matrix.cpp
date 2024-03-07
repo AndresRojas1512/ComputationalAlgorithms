@@ -8,6 +8,13 @@ Matrix::Matrix(int r, int c) : rows(r), cols(c), data(r, std::vector<Cell>(c))
 {
 }
 
+void Matrix::sort_by_first_column()
+{
+    std::sort(data.begin(), data.end(), [](const std::vector<Cell>& a, const std::vector<Cell>& b) {
+        return a.front().value < b.front().value;
+    });
+}
+
 Cell &Matrix::get_cell(int row, int col)
 {
     return data[row][col];
