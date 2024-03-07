@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include "ui.h"
 #include "file.h"
 #include "matrix.h"
 #include "newton.h"
@@ -7,70 +8,184 @@
 
 int main(void)
 {
-    std::string filename;
-    // int n;
-    double x;
-
-    std::cout << "Enter the filename: ";
-    std::cin >> filename;
-
-    // std::cout << "Enter n: ";
-    // std::cin >> n;
-
-    std::cout << "Enter x: ";
-    std::cin >> x;
-
-    int lines_count;
-    int columns_count;
     int exit_code = EXIT_SUCCESS;
+    int choice;
+    do
+    {
+        menu();
+        if (input_choice(&choice))
+            puts("\nError: Enter option 0 - 3");
+        else
+        {
+            switch (choice)
+            {
+                case 0:
+                {
+                    std::string filename;
+                    int method_choice;
+                    double x;
+                    int lines_count;
+                    int columns_count;
 
-    exit_code = file_count_lines(filename, lines_count);
-    if (exit_code)
-        return exit_code;
+                    std::cout << "Enter file name: ";
+                    std::cin >> filename;
 
-    exit_code = file_count_columns(filename, columns_count);
-    if (exit_code)
-        return exit_code;
-    
-    // Standard procedure object creation
-    // Matrix newton_table(lines_count - 1, n + 2);
-    // Matrix newton_table_inversed(lines_count - 1, lines_count);
-    // Matrix newton_table_interval(n + 1, n + 2);
+                    exit_code = file_count_lines(filename, lines_count);
+                    if (exit_code)
+                        return exit_code;
+                    exit_code = file_count_columns(filename, columns_count);
+                    if (exit_code)
+                        return exit_code;
+                    
+                    std::cout << "0 - Newton ; 1 - Hermite: ";
+                    std::cin >> method_choice;
+                    
+                    // Prepared data
+                    int rows_table = lines_count - 1;
 
-    // Root finding procedure
-    Matrix newton_table(lines_count - 1, lines_count);
-    Matrix newton_table_inversed(lines_count - 1, lines_count);
+                    if (!method_choice)
+                    {
+                        std::cout << "\tNEWTON" << std::endl;
+                        int degree;
+                        std::cout << "Enter degree : ";
+                        std::cin >> degree;
+                        std::cout << "Enter x: ";
+                        std::cin >> x;
 
-    exit_code = file_parse_newton(newton_table, filename);
-    if (exit_code)
-        return exit_code;
+                        // Create the tables
+                        Matrix newton_table_base(rows_table, degree + 2);
+                        Matrix newton_table_interval(degree + 1, degree + 2);
 
-    // Inverse table
-    std::cout << "Inversed table:" << std::endl;
-    inverse_table_newton(newton_table, newton_table_inversed);
-    newton_table_inversed.print_cell_value();
-    newton_table_inversed.sort_by_first_column();
-    std::cout << "Sorted inversed table:" << std::endl;
-    // newton_table_inversed.print_cell_value();
-    // Interval table
-    // std::cout << "Filtered table:" << std::endl;
-    // find_interval_containing_x_newton(newton_table, newton_table_interval, x, n);
+                        exit_code = file_parse_newton(newton_table_base, filename);
+                        if (exit_code)
+                            return exit_code;
+                        
+                        compute_table_interval_newton(newton_table_base, newton_table_interval, x, degree);
+                        init_newton_matrix_vectors(newton_table_interval);
+                        compute_newton_cells_vectors(newton_table_interval, degree);
+                        compute_newton_cells_values(newton_table_interval, degree);
+                        double result = interpolate_newton(newton_table_interval, x, degree);
+                        std::cout << "Result: " << result << std::endl;
+                    }
+                    else
+                    {
+                        std::cout << "\tHERMITE\t" << std::endl;
+                    }
+                    break;
+                }
+                case 1:
+                {
+                    std::string filename;
+                    std::vector<int> degrees; 
+                    int method_choice;
+                    double x;
+                    int lines_count;
+                    int columns_count;
 
-    // Divided differences table
-    // init_newton_matrix_vectors(newton_table_interval);
-    // compute_newton_cells_vectors(newton_table_interval, n);
-    // compute_newton_cells_values(newton_table_interval, n);
-    // double result = interpolate_newton(newton_table_interval, x, n);
-    // std::cout << "Result: " << result << std::endl;
+                    std::cout << "Enter file name: ";
+                    std::cin >> filename;
 
-    // Evaluate roots
-    init_newton_matrix_vectors(newton_table_inversed);
-    compute_newton_cells_vectors(newton_table_inversed, lines_count - 2);
-    compute_newton_cells_values(newton_table_inversed, lines_count - 2);
-    // std::cout << "Cell value:" << std::endl;
-    // newton_table_inversed.print_cell_value();
-    double result = interpolate_newton(newton_table_inversed, x, lines_count - 2);
-    std::cout << "Result: " << result << std::endl;
+                    exit_code = file_count_lines(filename, lines_count);
+                    if (exit_code)
+                        return exit_code;
+                    exit_code = file_count_columns(filename, columns_count);
+                    if (exit_code)
+                        return exit_code;
+                    
+                    std::cout << "0 - Newton ; 1 - Hermite: ";
+                    std::cin >> method_choice;
+                    
+                    // Prepared data
+                    int rows_table = lines_count - 1;
+
+                    if (!method_choice)
+                    {
+                        std::cout << "\tNEWTON" << std::endl;
+                        int degree_count;
+                        std::cout << "Enter degree count: ";
+                        std::cin >> degree_count;
+                        std::cout << "Enter x: ";
+                        std::cin >> x;
+
+                        for (int i = 1; i <= degree_count; i++)
+                            degrees.push_back(i);
+
+                        exit_code = interpolate_degrees_newton(degrees, x, rows_table, filename);
+                        if (exit_code)
+                            return exit_code;
+                    }
+                    else
+                    {
+                        std::cout << "\tHERMITE\t" << std::endl;
+                    }
+                    
+                    break;
+                }
+                case 2:
+                {
+                    std::cout << "Find root" << std::endl;
+                    std::string filename;
+                    int method_choice;
+                    int lines_count;
+                    int columns_count;
+
+                    std::cout << "Enter file name: ";
+                    std::cin >> filename;
+
+                    exit_code = file_count_lines(filename, lines_count);
+                    if (exit_code)
+                        return exit_code;
+                    exit_code = file_count_columns(filename, columns_count);
+                    if (exit_code)
+                        return exit_code;
+                    
+                    std::cout << "0 - Newton ; 1 - Hermite: ";
+                    std::cin >> method_choice;
+                    
+                    // Prepared data
+                    int rows_table = lines_count - 1;
+
+                    if (!method_choice)
+                    {
+                        std::cout << "\tNEWTON" << std::endl;
+                        int standard_degree = 3;
+                        int y = 0.0;
+
+                        Matrix newton_table_base(rows_table, standard_degree + 2);
+                        Matrix newton_table_inverted(rows_table, standard_degree + 2);
+                        Matrix newton_table_interval(rows_table, standard_degree + 2);
+
+                        exit_code = file_parse_newton(newton_table_base, filename);
+                        if (exit_code)
+                            return exit_code;
+
+                        inverse_table_newton(newton_table_base, newton_table_inverted);
+                        compute_table_interval_newton(newton_table_inverted, newton_table_interval, y, standard_degree);
+                        init_newton_matrix_vectors(newton_table_interval);
+                        compute_newton_cells_vectors(newton_table_interval, standard_degree);
+                        compute_newton_cells_values(newton_table_interval, standard_degree);
+                        double result = interpolate_newton(newton_table_interval, y, standard_degree);
+                        std::cout << "Root: " << result << std::endl;
+                    }
+                    else
+                    {
+                        std::cout << "\tHERMITE\t" << std::endl;
+                    }
+                    break;
+                }
+                case 3:
+                {
+                    std::cout << "System solving" << std::endl;
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+        }
+    }
+    while (choice != 0 || choice != 4);
 
     // HERMITE
     // Matrix hermite_table(n, n + 1);

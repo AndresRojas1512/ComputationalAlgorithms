@@ -36,9 +36,9 @@ void compute_newton_cells_values(Matrix &matrix, int n)
     {
         for (int row = 0; row < n; row++)
         {
-            std::cout << "[" << row << "]" << "[" << col << "]:" << std::endl;
-            std::cout << "Dividend: " << matrix[row + 1][col - 1].value << " - " << matrix[row][col - 1].value << std::endl;
-            std::cout << "Divisor: " << matrix[matrix[row][col].integers.back()][X].value << " - " << matrix[matrix[row][col].integers.front()][X].value << std::endl;
+            // std::cout << "[" << row << "]" << "[" << col << "]:" << std::endl;
+            // std::cout << "Dividend: " << matrix[row + 1][col - 1].value << " - " << matrix[row][col - 1].value << std::endl;
+            // std::cout << "Divisor: " << matrix[matrix[row][col].integers.back()][X].value << " - " << matrix[matrix[row][col].integers.front()][X].value << std::endl;
             
             double dividend = matrix[row + 1][col - 1].value - matrix[row][col - 1].value;
             double divisor = matrix[matrix[row][col].integers.back()][X].value - matrix[matrix[row][col].integers.front()][X].value;
@@ -51,7 +51,7 @@ double interpolate_newton(const Matrix &newton_table, double x, int n)
 {
     double result = newton_table[0][1].value;
     double term = 1.0;
-    for (int i = 1; i <= n; ++i)
+    for (int i = 1; i < n + 1; ++i)
     {
         term *= (x - newton_table[i - 1][0].value);
         result += newton_table[0][i + 1].value * term;
@@ -59,11 +59,9 @@ double interpolate_newton(const Matrix &newton_table, double x, int n)
     return result;
 }
 
-void find_interval_containing_x_newton(Matrix &input_matrix, Matrix &output_matrix, double x, int n)
+void compute_table_interval_newton(Matrix &input_matrix, Matrix &output_matrix, double x, int n)
 {
-    n++;
-    input_matrix.sort_by_first_column();
-    
+    n += 1;
     int start = 0, end = input_matrix.get_rows(), mid;
     while (start < end)
     {
@@ -87,27 +85,6 @@ void find_interval_containing_x_newton(Matrix &input_matrix, Matrix &output_matr
     }
 }
 
-void print_newton_polynomial(const Matrix &newton_table, int n)
-{
-    std::cout << "The Newton Interpolation Polynomial of degree " << n << " is:\n";
-
-    std::cout << newton_table[0][1].value;
-
-    for (int i = 1; i <= n; ++i)
-    {
-        std::cout << " + " << newton_table[0][i + 1].value;
-
-        for (int j = 0; j < i; ++j)
-        {
-            if (newton_table[j][0].value >= 0)
-                std::cout << "(x - " << newton_table[j][0].value << ")";
-            else
-                std::cout << "(x + " << -newton_table[j][0].value << ")";
-        }
-    }
-    std::cout << std::endl;
-}
-
 void inverse_table_newton(Matrix &input_table, Matrix &inverse_table)
 {
     for (int i = 0; i < input_table.get_rows(); i++)
@@ -117,3 +94,41 @@ void inverse_table_newton(Matrix &input_table, Matrix &inverse_table)
     }
 }
 
+void interpolate_complete_table(Matrix &f_x, Matrix &g_x, std::vector<double> results, int n)
+{
+    
+    for (int i = 0; i < f_x.get_rows(); i++)
+    {
+        std::cout << "f_x: " << f_x[i][X].value << ", ";
+        Matrix g_x_temp = g_x;
+        Matrix div_dif_table(n + 1, n + 2);
+        compute_table_interval_newton(g_x_temp, div_dif_table, f_x[i][X].value, n);
+        init_newton_matrix_vectors(div_dif_table);
+        compute_newton_cells_vectors(div_dif_table, n);
+        compute_newton_cells_values(div_dif_table, n);
+        double result = interpolate_newton(div_dif_table, f_x[i][X].value, n);
+        std::cout << "Result: " << result << std::endl;
+        results.push_back(result);
+    }
+}
+
+int interpolate_degrees_newton(std::vector<int> degrees, double x, int rows_table, std::string filename)
+{
+    int exit_code = 0;
+    for (long unsigned i = 0; i < degrees.size() && !exit_code; i++)
+    {
+        Matrix newton_table_base(rows_table, degrees[i] + 2);
+        Matrix newton_table_interval(degrees[i] + 1, degrees[i] + 2);
+        exit_code = file_parse_newton(newton_table_base, filename);
+        if (!exit_code)
+        {
+            compute_table_interval_newton(newton_table_base, newton_table_interval, x, degrees[i]);
+            init_newton_matrix_vectors(newton_table_interval);
+            compute_newton_cells_vectors(newton_table_interval, degrees[i]);
+            compute_newton_cells_values(newton_table_interval, degrees[i]);
+            double result = interpolate_newton(newton_table_interval, x, degrees[i]);
+            std::cout << "Degree: " << degrees[i] << ", Result: " << result << std::endl;
+        }
+    }
+    return exit_code;
+}
