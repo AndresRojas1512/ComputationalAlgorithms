@@ -202,22 +202,37 @@ int main(void)
 
                     Matrix newton_table_base_fx(rows_table, standard_degree + 2);
                     Matrix newton_table_base_gx(rows_table, standard_degree + 2);
+                    Matrix newton_table_interpolated_gx(rows_table, standard_degree + 2);
+                    Matrix newton_table_differences(rows_table, standard_degree + 2);
+                    Matrix newton_table_diffinv(rows_table, standard_degree + 2);
+                    Matrix newton_table_diffinv_interval(rows_table, standard_degree + 2);
+                    
 
-                    exit_code = file_parse_newton(newton_table_base_fx, filename_fx); // llega invertido
+                    exit_code = file_parse_newton(newton_table_base_fx, filename_fx);
                     if (exit_code)
                         return exit_code;
                     
-                    exit_code = file_parse_newton(newton_table_base_gx, filename_gx); // llega normal
+                    exit_code = file_parse_newton(newton_table_base_gx, filename_gx);
                     if (exit_code)
                         return exit_code;
-                    
-                    std::cout << "Fx:" << std::endl;
-                    newton_table_base_fx.print_cell_value();
-                    std::cout << "Gx:" << std::endl;
-                    newton_table_base_gx.print_cell_value();
 
-                    interpolate_complete_table(newton_table_base_fx, newton_table_base_gx, results, standard_degree);
-
+                    interpolate_complete_table(newton_table_base_fx, newton_table_base_gx, newton_table_interpolated_gx, standard_degree);
+                    std::cout << "Interpolated Gx:" << std::endl;
+                    newton_table_interpolated_gx.print_cell_value();
+                    find_functions_difference(newton_table_base_fx, newton_table_interpolated_gx, newton_table_differences);
+                    std::cout << "Differences:" << std::endl;
+                    newton_table_differences.print_cell_value();
+                    inverse_table_newton(newton_table_differences, newton_table_diffinv);
+                    std::cout << "Inverted differences:" << std::endl;
+                    newton_table_diffinv.print_cell_value();
+                    compute_table_interval_newton(newton_table_diffinv, newton_table_diffinv_interval, 0.0, standard_degree);
+                    std::cout << "Interval chosen:" << std::endl;
+                    newton_table_diffinv_interval.print_cell_value();
+                    init_newton_matrix_vectors(newton_table_diffinv_interval);
+                    compute_newton_cells_vectors(newton_table_diffinv_interval, standard_degree);
+                    compute_newton_cells_values(newton_table_diffinv_interval, standard_degree);
+                    double result = interpolate_newton(newton_table_diffinv_interval, 0.0, standard_degree);
+                    std::cout << "Root X: " << result << std::endl;
                     break;
                 }
                 default:

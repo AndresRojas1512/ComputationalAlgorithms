@@ -59,28 +59,40 @@ double interpolate_newton(const Matrix &newton_table, double x, int n)
     return result;
 }
 
-void compute_table_interval_newton(Matrix &input_matrix, Matrix &output_matrix, double x, int n)
-{
-    n += 1;
-    int start = 0, end = input_matrix.get_rows(), mid;
-    while (start < end)
-    {
-        mid = start + (end - start) / 2;
-        if (input_matrix[mid][0].value < x)
-            start = mid + 1;
-        else
-            end = mid;
+void compute_table_interval_newton(const Matrix& input_matrix, Matrix& output_matrix, double x, int n) {
+    n += 1;  // Adjust to get n + 1 elements for the interval
+    int rows = input_matrix.get_rows();
+    int bestStartIndex = -1;
+    double minDiff = std::numeric_limits<double>::max();
+
+    // Iterate to find the point where x fits between positive and negative values
+    for (int i = 0; i < rows - 1; ++i) {
+        double currentValue = input_matrix[i][0].value;
+        double nextValue = input_matrix[i + 1][0].value;
+
+        // Look for where x would fit between the transition from positive to negative or vice versa
+        if ((currentValue <= x && x <= nextValue) || (currentValue >= x && x >= nextValue)) {
+            double diff = std::abs(currentValue - x) + std::abs(nextValue - x);
+            if (diff < minDiff) {
+                minDiff = diff;
+                bestStartIndex = i;
+            }
+        }
     }
 
-    start = std::max(0, start - n/2);
-    end = std::min(start + n, input_matrix.get_rows());
-    start = std::max(0, end - n);
+    // Adjust start index to collect n+1 elements, ensuring it doesn't overflow the table bounds
+    int startIndex = bestStartIndex - n / 2;
+    if (startIndex < 0) {
+        startIndex = 0;  // Adjust to start of the table if overflow
+    } else if (startIndex + n > rows) {
+        startIndex = rows - n;  // Adjust to end of the table if overflow
+    }
 
-    for (int i = start; i < end; ++i)
-    {
-        for (int j = 0; j < input_matrix.get_cols(); ++j)
-        {
-            output_matrix[i-start][j] = input_matrix[i][j];
+    // Generate output matrix based on the identified interval
+    output_matrix = Matrix(n, input_matrix.get_cols()); // Assuming Matrix can be resized or reinitialized
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < input_matrix.get_cols(); ++j) {
+            output_matrix[i][j] = input_matrix[startIndex + i][j];
         }
     }
 }
@@ -94,8 +106,9 @@ void inverse_table_newton(Matrix &input_table, Matrix &inverse_table)
     }
 }
 
-void interpolate_complete_table(Matrix &f_x, Matrix &g_x, std::vector<double> results, int n)
+void interpolate_complete_table(Matrix &f_x, Matrix &g_x, Matrix &interpolated_g_x, int n)
 {
+    std::vector<double> results;
     for (int i = 0; i < f_x.get_rows(); i++)
     {
         // std::cout << "f_x: " << f_x[i][X].value << ", ";
@@ -108,6 +121,31 @@ void interpolate_complete_table(Matrix &f_x, Matrix &g_x, std::vector<double> re
         double result = interpolate_newton(div_dif_table, f_x[i][X].value, n);
         // std::cout << "Result: " << result << std::endl;
         results.push_back(result);
+    }
+    // Fill the table
+    for (int i = 0; i < f_x.get_rows(); i++)
+    {
+        interpolated_g_x[i][X].value = f_x[i][X].value;
+        interpolated_g_x[i][Y].value = results[i];
+    }
+}
+
+void find_functions_difference(Matrix &f_x, Matrix &g_x, Matrix &differences)
+{
+    for (int i = 0; i < f_x.get_rows(); i++)
+    {
+        std::cout << "Row: " << i << ", Value " << f_x[i][X].value << ": " <<  f_x[i][Y].value << " - " << g_x[i][Y].value << std::endl;
+        differences[i][X].value = f_x[i][X].value;
+        differences[i][Y].value = f_x[i][Y].value - g_x[i][Y].value;
+    }
+}
+
+void form_interpolated_g_x(Matrix &interpolated_table_g_x, Matrix &f_x, std::vector<double> interpolated_ys)
+{
+    for (int i = 0; i < f_x.get_rows(); i++)
+    {
+        interpolated_table_g_x[i][X].value = f_x[i][X].value;
+        interpolated_table_g_x[i][Y].value = interpolated_ys[i];
     }
 }
 
