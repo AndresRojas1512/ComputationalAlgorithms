@@ -201,8 +201,11 @@ int main(void)
                     int standard_degree = 4;
 
                     Matrix newton_table_base_fx(rows_table, standard_degree + 2);
+                    Matrix newton_table_fx_interval(rows_table, standard_degree + 2);
+
                     Matrix newton_table_base_gx(rows_table, standard_degree + 2);
                     Matrix newton_table_interpolated_gx(rows_table, standard_degree + 2);
+                    
                     Matrix newton_table_differences(rows_table, standard_degree + 2);
                     Matrix newton_table_diffinv(rows_table, standard_degree + 2);
                     Matrix newton_table_diffinv_interval(rows_table, standard_degree + 2);
@@ -217,22 +220,22 @@ int main(void)
                         return exit_code;
 
                     interpolate_complete_table(newton_table_base_fx, newton_table_base_gx, newton_table_interpolated_gx, standard_degree);
-                    std::cout << "Interpolated Gx:" << std::endl;
-                    newton_table_interpolated_gx.print_cell_value();
                     find_functions_difference(newton_table_base_fx, newton_table_interpolated_gx, newton_table_differences);
-                    std::cout << "Differences:" << std::endl;
-                    newton_table_differences.print_cell_value();
                     inverse_table_newton(newton_table_differences, newton_table_diffinv);
-                    std::cout << "Inverted differences:" << std::endl;
-                    newton_table_diffinv.print_cell_value();
+
                     compute_table_interval_newton(newton_table_diffinv, newton_table_diffinv_interval, 0.0, standard_degree);
-                    std::cout << "Interval chosen:" << std::endl;
-                    newton_table_diffinv_interval.print_cell_value();
                     init_newton_matrix_vectors(newton_table_diffinv_interval);
                     compute_newton_cells_vectors(newton_table_diffinv_interval, standard_degree);
                     compute_newton_cells_values(newton_table_diffinv_interval, standard_degree);
-                    double result = interpolate_newton(newton_table_diffinv_interval, 0.0, standard_degree);
-                    std::cout << "Root X: " << result << std::endl;
+                    double x_root = interpolate_newton(newton_table_diffinv_interval, 0.0, standard_degree);
+
+                    compute_table_interval_newton(newton_table_base_fx, newton_table_fx_interval, x_root, standard_degree);
+                    init_newton_matrix_vectors(newton_table_fx_interval);
+                    compute_newton_cells_vectors(newton_table_fx_interval, standard_degree);
+                    compute_newton_cells_values(newton_table_fx_interval, standard_degree);
+                    double y_root = interpolate_newton(newton_table_fx_interval, x_root, standard_degree);
+
+                    std::cout << "X: " << x_root << ", Y: " << y_root << std::endl;
                     break;
                 }
                 default:
