@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include "linkage.h"
 #include "ui.h"
 #include "file.h"
 #include "matrix.h"
@@ -43,7 +44,7 @@ int main(void)
                     // Prepared data
                     int rows_table = lines_count - 1;
 
-                    if (!method_choice)
+                    if (!method_choice) // NEWTON
                     {
                         std::cout << "\tNEWTON" << std::endl;
                         int degree;
@@ -67,7 +68,7 @@ int main(void)
                         double result = interpolate_newton(newton_table_interval, x, degree);
                         std::cout << "Result: " << result << std::endl;
                     }
-                    else
+                    else // HERMITE
                     {
                         std::cout << "\tHERMITE\t" << std::endl;
                         int points;
@@ -104,17 +105,20 @@ int main(void)
                     }
                     break;
                 }
-                case 1:
+                case 1: // Comparar resultados
                 {
+                    int type_choice;
                     std::string filename;
-                    std::vector<int> degrees; 
-                    int method_choice;
                     double x;
                     int lines_count;
                     int columns_count;
-
+                    
+                    // Input
                     std::cout << "Enter file name: ";
                     std::cin >> filename;
+
+                    std::cout << "Enter x: ";
+                    std::cin >> x;
 
                     exit_code = file_count_lines(filename, lines_count);
                     if (exit_code)
@@ -123,36 +127,53 @@ int main(void)
                     if (exit_code)
                         return exit_code;
                     
-                    std::cout << "0 - Newton ; 1 - Hermite: ";
-                    std::cin >> method_choice;
                     
-                    // Prepared data
+                    std::cout << "0 - by degree | 1 - by points: ";
+                    std::cin >> type_choice;
+
                     int rows_table = lines_count - 1;
 
-                    if (!method_choice)
+                    if (!type_choice) // By degree | p = 2, 5, 8
                     {
-                        std::cout << "\tNEWTON" << std::endl;
-                        int degree_count;
-                        std::cout << "Enter degree count: ";
-                        std::cin >> degree_count;
-                        std::cout << "Enter x: ";
-                        std::cin >> x;
-
-                        for (int i = 1; i <= degree_count; i++)
-                            degrees.push_back(i);
-
-                        exit_code = interpolate_degrees_newton(degrees, x, rows_table, filename);
+                        int degrees_std[3] = {2, 5, 8};
+                        std::vector<int> degrees_vec;
+                        std::vector<LinkageDegree> vector_ld;
+                        int degrees_n = 3;
+                        for (int i = 0; i < degrees_n; i++)
+                            degrees_vec.push_back(degrees_std[i]);
+                        
+                        linkage_degree_map(vector_ld, degrees_vec);
+                        // --------- NEWTON ---------
+                        exit_code = interpolate_degrees_newton_ld(vector_ld, x, rows_table, filename);
+                        if (exit_code)
+                            return exit_code;
+                        // --------- HERMITE ---------
+                        exit_code = interpolate_points_hermite_ld(vector_ld, x, rows_table, columns_count, filename);
                         if (exit_code)
                             return exit_code;
                     }
-                    else
+                    else // By points | n = 2_5
                     {
-                        std::cout << "\tHERMITE\t" << std::endl;
+                        int points_std[3] = {2, 3, 4};
+                        std::vector<int> points_vec;
+                        std::vector<LinkagePoint> vector_lp;
+                        int points_n  = 3;
+                        for (int i = 0; i < points_n; i++)
+                            points_vec.push_back(points_std[i]);
+                        
+                        linkage_point_map(vector_lp, points_vec);
+                        // --------- NEWTON ---------
+                        exit_code = interpolate_degrees_newton_lp(vector_lp, x, rows_table, filename);
+                        if (exit_code)
+                            return exit_code;
+                        // --------- HERMITE ---------
+                        exit_code = interpolate_points_hermite_lp(vector_lp, x, rows_table, columns_count, filename);
+                        if (exit_code)
+                            return exit_code;
                     }
-                    
                     break;
                 }
-                case 2:
+                case 2: // Encontrar raiz
                 {
                     std::cout << "Find root" << std::endl;
                     std::string filename;
@@ -176,6 +197,7 @@ int main(void)
                     // Prepared data
                     int rows_table = lines_count - 1;
 
+                    // -------- NEWTON --------
                     if (!method_choice)
                     {
                         std::cout << "\tNEWTON" << std::endl;
@@ -201,10 +223,44 @@ int main(void)
                     else
                     {
                         std::cout << "\tHERMITE\t" << std::endl;
+                        int standard_points = 4;
+                        int y = 0.0;
+
+                        int data_count = columns_count - 1;
+
+                        Matrix table_input(rows_table, 2);
+                        Matrix table_input_inverted(rows_table, 2);
+
+                        Matrix table_interval(standard_points, 2);
+                        Matrix table_hermite(standard_points * data_count, (standard_points * data_count) + 1);
+
+                        Matrix table_derivatives(rows_table, columns_count - 2);
+                        Matrix table_derivatives_inverted(rows_table, columns_count - 2);
+
+                        exit_code = file_parse_newton(table_input, filename);
+                        if (exit_code)
+                            return exit_code;
+                        
+                        exit_code = file_parse_derivatives(table_derivatives, filename);
+                        if (exit_code)
+                            return exit_code;
+                        
+                        invert_table_derivatives(table_derivatives, table_derivatives_inverted);
+                        inverse_table_newton(table_input, table_input_inverted);
+                        init_base_matrix_blocks(table_input_inverted);
+
+                        compute_table_interval_newton(table_input_inverted, table_interval, y, standard_points - 1);
+                        init_hermite_table(table_interval, table_hermite, data_count);
+                        init_hermite_matrix_vectors(table_hermite);
+                        compute_hermite_cells_vectors(table_hermite);
+                        compute_hermite_derivatives(table_hermite, table_derivatives_inverted);
+                        compute_hermite_cells_values(table_hermite);
+                        double result = interpolate_hermite(table_hermite, y);
+                        std::cout << "Result: " << result << std::endl;
                     }
                     break;
                 }
-                case 3:
+                case 3: // Resolver sistema
                 {
                     std::cout << "System solving" << std::endl;
                     std::string filename_fx;
@@ -277,25 +333,6 @@ int main(void)
         }
     }
     while (choice != 0 || choice != 4);
-
-    // HERMITE
-    // Matrix hermite_table(n, n + 1);
-    // Matrix derivative_table(n, columns_count - 2);
-    // int data_count = columns_count - 1;
-
-    // exit_code = file_parse_hermite(hermite_table, filename, data_count);
-    // if (exit_code)
-    //     return exit_code;
-    
-    // exit_code = file_parse_derivatives(derivative_table, filename);
-    // if (exit_code)
-    //     return exit_code;
-
-    // init_hermite_matrix_vectors_blocks(hermite_table, data_count);
-    // compute_hermite_cells_vectors(hermite_table, n);
-    // compute_hermite_derivatives(hermite_table, derivative_table, n);
-    // compute_hermite_cells_values(hermite_table, n);
-    // hermite_table.print_cell_value();
 
     return 0;
 }

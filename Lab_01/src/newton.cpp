@@ -149,22 +149,43 @@ void form_interpolated_g_x(Matrix &interpolated_table_g_x, Matrix &f_x, std::vec
     }
 }
 
-int interpolate_degrees_newton(std::vector<int> degrees, double x, int rows_table, std::string filename)
+int interpolate_degrees_newton_ld(std::vector<LinkageDegree> vector_ld, double x, int rows_table, std::string filename)
 {
-    int exit_code = 0;
-    for (long unsigned i = 0; i < degrees.size() && !exit_code; i++)
+    int exit_code = EXIT_SUCCESS;
+    for (long unsigned i = 0; i < vector_ld.size() && !exit_code; i++)
     {
-        Matrix newton_table_base(rows_table, degrees[i] + 2);
-        Matrix newton_table_interval(degrees[i] + 1, degrees[i] + 2);
+        Matrix newton_table_base(rows_table, vector_ld[i].newton_degree + 2);
+        Matrix newton_table_interval(vector_ld[i].newton_degree + 1, vector_ld[i].newton_degree + 2);
         exit_code = file_parse_newton(newton_table_base, filename);
         if (!exit_code)
         {
-            compute_table_interval_newton(newton_table_base, newton_table_interval, x, degrees[i]);
+            compute_table_interval_newton(newton_table_base, newton_table_interval, x, vector_ld[i].newton_degree);
             init_newton_matrix_vectors(newton_table_interval);
-            compute_newton_cells_vectors(newton_table_interval, degrees[i]);
-            compute_newton_cells_values(newton_table_interval, degrees[i]);
-            double result = interpolate_newton(newton_table_interval, x, degrees[i]);
-            std::cout << "Degree: " << degrees[i] << ", Result: " << result << std::endl;
+            compute_newton_cells_vectors(newton_table_interval, vector_ld[i].newton_degree);
+            compute_newton_cells_values(newton_table_interval, vector_ld[i].newton_degree);
+            double result = interpolate_newton(newton_table_interval, x, vector_ld[i].newton_degree);
+            std::cout << "Degree: " << vector_ld[i].newton_degree << ", Result: " << result << std::endl;
+        }
+    }
+    return exit_code;
+}
+
+int interpolate_degrees_newton_lp(std::vector<LinkagePoint> vector_lp, double x, int rows_table, std::string filename)
+{
+    int exit_code = EXIT_SUCCESS;
+    for (long unsigned i = 0; i < vector_lp.size() && !exit_code; i++)
+    {
+        Matrix newton_table_base(rows_table, vector_lp[i].newton_degree + 2);
+        Matrix newton_table_interval(vector_lp[i].newton_degree + 1, vector_lp[i].newton_degree + 2);
+        exit_code = file_parse_newton(newton_table_base, filename);
+        if (!exit_code)
+        {
+            compute_table_interval_newton(newton_table_base, newton_table_interval, x, vector_lp[i].newton_degree);
+            init_newton_matrix_vectors(newton_table_interval);
+            compute_newton_cells_vectors(newton_table_interval, vector_lp[i].newton_degree);
+            compute_newton_cells_values(newton_table_interval, vector_lp[i].newton_degree);
+            double result = interpolate_newton(newton_table_interval, x, vector_lp[i].newton_degree);
+            std::cout << "Degree: " << vector_lp[i].newton_degree << ", Result: " << result << std::endl;
         }
     }
     return exit_code;

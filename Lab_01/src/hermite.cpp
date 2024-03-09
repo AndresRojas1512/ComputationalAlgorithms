@@ -106,12 +106,13 @@ void compute_hermite_cells_values(Matrix &matrix)
 
 double interpolate_hermite(const Matrix &table_hermite, double x)
 {
-    double result = table_hermite[0][1].value;
+    double result = table_hermite[0][1].value; // Starting with y0
     double term = 1.0;
-    for (int i = 1; i < table_hermite.get_rows(); ++i)
-    {
-        term *= (x - table_hermite[i - 1][0].value);
-        result += table_hermite[0][i + 1].value * term;
+    
+    // Loop through the table using the divided differences
+    for (int i = 1; i < table_hermite.get_cols() - 1; ++i) { // Note the change here to get_cols() - 1
+        term *= (x - table_hermite[i - 1][0].value); // Constructing the (x - xi) term correctly
+        result += table_hermite[0][i + 1].value * term; // Accessing the coefficients correctly
     }
     return result;
 }
@@ -124,4 +125,86 @@ double compute_factorial(int n)
         result *= i;
     }
     return result;
+}
+
+int interpolate_points_hermite_ld(std::vector<LinkageDegree> &vector_ld, double x, int rows_table, int columns_count, std::string filename)
+{
+    int exit_code = EXIT_SUCCESS;
+    int data_count = columns_count - 1;
+    for (long unsigned i = 0; i < vector_ld.size() && !exit_code; i++)
+    {
+        Matrix table_input(rows_table, 2);
+        Matrix table_interval(vector_ld[i].hermite_points, 2);
+        Matrix table_hermite(vector_ld[i].hermite_points * data_count, (vector_ld[i].hermite_points * data_count) + 1);
+        Matrix table_derivatives(rows_table, columns_count - 2);
+        exit_code = file_parse_newton(table_input, filename);
+        if (!exit_code)
+        {
+            exit_code = file_parse_derivatives(table_derivatives, filename);
+            if (!exit_code)
+            {
+                init_base_matrix_blocks(table_input);
+                compute_table_interval_newton(table_input, table_interval, x, vector_ld[i].hermite_points - 1);
+                init_hermite_table(table_interval, table_hermite, data_count);
+                init_hermite_matrix_vectors(table_hermite);
+                compute_hermite_cells_vectors(table_hermite);
+                compute_hermite_derivatives(table_hermite, table_derivatives);
+                compute_hermite_cells_values(table_hermite);
+                double result = interpolate_hermite(table_hermite, x);
+                std::cout << "Points: " << vector_ld[i].hermite_points << ", Result: " << result << std::endl;
+            }
+        }
+    }
+    return exit_code;
+}
+
+int interpolate_points_hermite_lp(std::vector<LinkagePoint> &vector_lp, double x, int rows_table, int columns_count, std::string filename)
+{
+    int exit_code = EXIT_SUCCESS;
+    int data_count = columns_count - 1;
+    for (long unsigned i = 0; i < vector_lp.size() && !exit_code; i++)
+    {
+        Matrix table_input(rows_table, 2);
+        Matrix table_interval(vector_lp[i].hermite_points, 2);
+        Matrix table_hermite(vector_lp[i].hermite_points * data_count, (vector_lp[i].hermite_points * data_count) + 1);
+        Matrix table_derivatives(rows_table, columns_count - 2);
+        exit_code = file_parse_newton(table_input, filename);
+        if (!exit_code)
+        {
+            exit_code = file_parse_derivatives(table_derivatives, filename);
+            if (!exit_code)
+            {
+                init_base_matrix_blocks(table_input);
+                compute_table_interval_newton(table_input, table_interval, x, vector_lp[i].hermite_points - 1);
+                init_hermite_table(table_interval, table_hermite, data_count);
+                init_hermite_matrix_vectors(table_hermite);
+                compute_hermite_cells_vectors(table_hermite);
+                compute_hermite_derivatives(table_hermite, table_derivatives);
+                compute_hermite_cells_values(table_hermite);
+                double result = interpolate_hermite(table_hermite, x);
+                std::cout << "Points: " << vector_lp[i].hermite_points << ", Result: " << result << std::endl;
+            }
+        }
+    }
+    return exit_code;
+}
+
+// Inverse interpolation
+void invert_table_derivatives(Matrix &table_derivatives, Matrix &table_derivatives_inverted)
+{
+    double epsilon = std::numeric_limits<double>::epsilon();
+    for (int i = 0; i < table_derivatives.get_rows(); i++)
+    {
+        for (int j = 0; j < table_derivatives.get_cols(); j++)
+        {
+            if (std::abs(table_derivatives[i][j].value) < epsilon)
+            {
+                table_derivatives_inverted[i][j].value = 1e6;
+            }
+            else
+            {
+                table_derivatives_inverted[i][j].value = 1.0 / table_derivatives[i][j].value;
+            }
+        }
+    }
 }
