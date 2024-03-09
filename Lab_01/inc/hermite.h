@@ -11,11 +11,16 @@
 #define X 0
 #define Y 1
 
-void init_hermite_matrix_vectors_blocks(Matrix &matrix, int data_count);
-void compute_hermite_cells_vectors(Matrix &matrix, int n);
-void compute_hermite_derivatives(Matrix &matrix, Matrix &derivatives, int n);
-void compute_hermite_cells_values(Matrix &matrix, int n);
+// Base matrix
+void init_base_matrix_blocks(Matrix &matrix);
+
+void init_hermite_table(Matrix &table_interval, Matrix &table_hermite, int data_count);
+void init_hermite_matrix_vectors(Matrix &matrix);
+void compute_hermite_cells_vectors(Matrix &table_hermite);
+void compute_hermite_derivatives(Matrix &matrix, Matrix &derivatives);
+void compute_hermite_cells_values(Matrix &matrix);
 void print_hermite_polynomial(const Matrix &hermite_table, int nodes);
+double interpolate_hermite(const Matrix &hermite_table, double x);
 double compute_factorial(int n);
 
 #endif

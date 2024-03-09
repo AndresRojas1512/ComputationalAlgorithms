@@ -47,7 +47,7 @@ int main(void)
                     {
                         std::cout << "\tNEWTON" << std::endl;
                         int degree;
-                        std::cout << "Enter degree : ";
+                        std::cout << "Enter degree: ";
                         std::cin >> degree;
                         std::cout << "Enter x: ";
                         std::cin >> x;
@@ -70,6 +70,37 @@ int main(void)
                     else
                     {
                         std::cout << "\tHERMITE\t" << std::endl;
+                        int points;
+                        std::cout << "Enter points: ";
+                        std::cin >> points;
+                        std::cout << "Enter x: ";
+                        std::cin >> x;
+
+                        int data_count = columns_count - 1;
+
+                        Matrix table_input(rows_table, 2);
+                        Matrix table_interval(points, 2);
+                        Matrix table_hermite(points * data_count, (points * data_count) + 1);
+                        Matrix table_derivatives(rows_table, columns_count - 2);
+
+                        exit_code = file_parse_newton(table_input, filename);
+                        if (exit_code)
+                            return exit_code;
+                        
+                        exit_code = file_parse_derivatives(table_derivatives, filename);
+                        if (exit_code)
+                            return exit_code;
+
+                        init_base_matrix_blocks(table_input);
+                        compute_table_interval_newton(table_input, table_interval, x, points - 1);
+                        init_hermite_table(table_interval, table_hermite, data_count);
+                        init_hermite_matrix_vectors(table_hermite);
+                        compute_hermite_cells_vectors(table_hermite);
+                        compute_hermite_derivatives(table_hermite, table_derivatives);
+                        compute_hermite_cells_values(table_hermite);
+                        table_hermite.print_cell_value();
+                        double result = interpolate_hermite(table_hermite, x);
+                        std::cout << "Result: " << result << std::endl;
                     }
                     break;
                 }
@@ -265,5 +296,6 @@ int main(void)
     // compute_hermite_derivatives(hermite_table, derivative_table, n);
     // compute_hermite_cells_values(hermite_table, n);
     // hermite_table.print_cell_value();
+
     return 0;
 }

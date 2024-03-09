@@ -1,28 +1,49 @@
 #include "hermite.h"
 
-void init_hermite_matrix_vectors_blocks(Matrix &matrix, int data_count)
+void init_base_matrix_blocks(Matrix &matrix)
+{
+    for (int i = 0; i < matrix.get_rows(); i++)
+    {
+        matrix[i][X].block = i;
+        matrix[i][Y].block = i;
+    }
+}
+
+// Multiplies the rows by data_count
+void init_hermite_table(Matrix &table_interval, Matrix &table_hermite, int data_count)
+{
+    for (int i = 0; i < table_interval.get_rows(); i++)
+    {
+        for (int j = 0; j < data_count; j++)
+        {
+            int index = i * data_count + j;
+            table_hermite[index][X].value = table_interval[i][X].value;
+            table_hermite[index][Y].value = table_interval[i][Y].value;
+
+            table_hermite[index][X].block = table_interval[i][X].block;
+            table_hermite[index][Y].block = table_interval[i][Y].block;
+        }
+    }
+}
+
+// Init the first X Y vectors
+void init_hermite_matrix_vectors(Matrix &matrix)
 {
     int index = 0;
-
-    for (int row = 0; row < matrix.get_rows(); ++row)
+    for (int row = 0; row < matrix.get_rows(); row++)
     {
-        int row_block = row / data_count;
-
-        matrix[row][X].block = row_block;
-        matrix[row][Y].block = row_block;
-
         matrix[row][X].integers.push_back(index);
         matrix[row][Y].integers.push_back(index);
-
         index++;
     }
 }
 
-void compute_hermite_cells_vectors(Matrix &matrix, int n)
+// Compute hermite_table vectors
+void compute_hermite_cells_vectors(Matrix &matrix)
 {
-    for (int col = 2; col < (n + 1); col++)
+    for (int col = 2; col < matrix.get_cols(); col++)
     {
-        for (int row = 0; row <  (n - 1); row++)
+        for (int row = 0; row < (matrix.get_rows() - 1); row++)
         {
             matrix[row][col].integers.clear();
 
@@ -39,12 +60,13 @@ void compute_hermite_cells_vectors(Matrix &matrix, int n)
     }
 }
 
-void compute_hermite_derivatives(Matrix &matrix, Matrix &derivatives, int n)
+// Put derivatives where they are needed
+void compute_hermite_derivatives(Matrix &matrix, Matrix &derivatives)
 {
-    int derivative_index = 0;
-    for (int col = 2; col < (n + 1); col++)
+    int derivative_index = 0; // derivative degree
+    for (int col = 2; col < matrix.get_cols(); col++)
     {
-        for (int row = 0; row < (n - 1); row++)
+        for (int row = 0; row < (matrix.get_rows() - 1); row++)
         {
             int left_block = matrix[row][col - 1].block;
             int left_diagonal_block = matrix[row + 1][col - 1].block;
@@ -62,11 +84,11 @@ void compute_hermite_derivatives(Matrix &matrix, Matrix &derivatives, int n)
     }
 }
 
-void compute_hermite_cells_values(Matrix &matrix, int n)
+void compute_hermite_cells_values(Matrix &matrix)
 {
-    for (int col = 2; col < (n + 1); col++)
+    for (int col = 2; col < matrix.get_cols(); col++)
     {
-        for (int row = 0; row < (n - 1); row++)
+        for (int row = 0; row < (matrix.get_rows() - 1); row++)
         {
             if (matrix[row][col].block == -1)
             {
@@ -82,35 +104,16 @@ void compute_hermite_cells_values(Matrix &matrix, int n)
     }
 }
 
-void print_hermite_polynomial(const Matrix &hermite_table, int nodes)
+double interpolate_hermite(const Matrix &table_hermite, double x)
 {
-    const double EPSILON = std::numeric_limits<double>::epsilon();
-    std::cout << "The Hermite Interpolation Polynomial is:\n";
-
-    std::cout << hermite_table[0][1].value;
-
-    for (int i = 1; i < nodes; ++i)
+    double result = table_hermite[0][1].value;
+    double term = 1.0;
+    for (int i = 1; i < table_hermite.get_rows(); ++i)
     {
-        std::cout << " + " << hermite_table[0][i + 1].value;
-
-        for (int j = 0, power = 1; j < i; ++j, ++power) {
-            if (hermite_table[j][0].value >= 0)
-                std::cout << "(x - " << hermite_table[j][0].value << ")";
-            else
-                std::cout << "(x + " << -hermite_table[j][0].value << ")";
-
-            if (j < i - 1 && std::abs(hermite_table[j][0].value - hermite_table[j + 1][0].value) < EPSILON)
-            {
-                std::cout << "^" << power;
-            }
-            else
-            {
-                power = 0;
-            }
-        }
+        term *= (x - table_hermite[i - 1][0].value);
+        result += table_hermite[0][i + 1].value * term;
     }
-
-    std::cout << std::endl;
+    return result;
 }
 
 double compute_factorial(int n)
