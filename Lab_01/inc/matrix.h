@@ -38,6 +38,7 @@ class Matrix
         void print_cell_block() const;
         std::vector<Cell> &operator[](int index);
         const std::vector<Cell> &operator[](int index) const;
+        void print_matrix_style() const;
 };
 
 #endif

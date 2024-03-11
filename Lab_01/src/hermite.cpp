@@ -1,5 +1,6 @@
 #include "hermite.h"
 
+// Init the X and Y columns with block index
 void init_base_matrix_blocks(Matrix &matrix)
 {
     for (int i = 0; i < matrix.get_rows(); i++)
@@ -9,7 +10,7 @@ void init_base_matrix_blocks(Matrix &matrix)
     }
 }
 
-// Multiplies the rows by data_count
+// Multiply the rows by the amount of data that is given about the function
 void init_hermite_table(Matrix &table_interval, Matrix &table_hermite, int data_count)
 {
     for (int i = 0; i < table_interval.get_rows(); i++)
@@ -26,7 +27,7 @@ void init_hermite_table(Matrix &table_interval, Matrix &table_hermite, int data_
     }
 }
 
-// Init the first X Y vectors
+// Init the divided differences vector of X and Y columns
 void init_hermite_matrix_vectors(Matrix &matrix)
 {
     int index = 0;
@@ -38,7 +39,7 @@ void init_hermite_matrix_vectors(Matrix &matrix)
     }
 }
 
-// Compute hermite_table vectors
+// Compute the divided difference vectors for each cell 
 void compute_hermite_cells_vectors(Matrix &matrix)
 {
     for (int col = 2; col < matrix.get_cols(); col++)
@@ -60,7 +61,7 @@ void compute_hermite_cells_vectors(Matrix &matrix)
     }
 }
 
-// Put derivatives where they are needed
+// Add the derivatives where needed
 void compute_hermite_derivatives(Matrix &matrix, Matrix &derivatives)
 {
     int derivative_index = 0; // derivative degree
@@ -84,6 +85,7 @@ void compute_hermite_derivatives(Matrix &matrix, Matrix &derivatives)
     }
 }
 
+// Based on the divided differences vector, calculate the values
 void compute_hermite_cells_values(Matrix &matrix)
 {
     for (int col = 2; col < matrix.get_cols(); col++)
@@ -95,7 +97,6 @@ void compute_hermite_cells_values(Matrix &matrix)
                 // std::cout << "[" << row << "]" << "[" << col << "]:" << std::endl;
                 // std::cout << "Dividend: " << matrix[row + 1][col - 1].value << " - " << matrix[row][col - 1].value << std::endl;
                 // std::cout << "Divisor: " << matrix[matrix[row][col].integers.back()][X].value << " - " << matrix[matrix[row][col].integers.front()][X].value << std::endl;
-                
                 double dividend = matrix[row + 1][col - 1].value - matrix[row][col - 1].value;
                 double divisor = matrix[matrix[row][col].integers.back()][X].value - matrix[matrix[row][col].integers.front()][X].value;
                 matrix[row][col].value = dividend / divisor;

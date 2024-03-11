@@ -67,6 +67,7 @@ int main(void)
                         compute_newton_cells_values(newton_table_interval, degree);
                         double result = interpolate_newton(newton_table_interval, x, degree);
                         std::cout << "Result: " << result << std::endl;
+                        newton_table_interval.print_matrix_style();
                     }
                     else // HERMITE
                     {

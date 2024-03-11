@@ -105,3 +105,26 @@ const std::vector<Cell> &Matrix::operator[](int index) const
 {
     return data[index];
 }
+
+void Matrix::print_matrix_style() const
+{
+    const int columnWidth = 9; // Adjust column width as needed
+    const int precision = 2; // Decimal precision for double values
+
+    // Print the top border
+    std::cout << '+' << std::string(columnWidth * cols + cols - 1, '-') << '+' << std::endl;
+
+    for (int i = 0; i < rows; ++i)
+    {
+        std::cout << '|';
+        for (int j = 0; j < cols; ++j)
+        {
+            std::cout << std::right << std::setw(columnWidth - 1) 
+                    << std::fixed << std::setprecision(precision) 
+                    << data[i][j].value << '|';
+        }
+        std::cout << std::endl;
+        // Print a separator after each row
+        std::cout << '+' << std::string(columnWidth * cols + cols - 1, '-') << '+' << std::endl;
+    }
+}

@@ -30,5 +30,6 @@ int interpolate_points_hermite_ld(std::vector<LinkageDegree> &vector_ld, double 
 int interpolate_points_hermite_lp(std::vector<LinkagePoint> &vector_lp, double x, int rows_table, int columns_count, std::string filename);
 
 void invert_table_derivatives(Matrix &table_derivatives, Matrix &table_derivatives_inverted);
+void printMatrixTableStyle(const std::vector<std::vector<double>>& matrix);
 
 #endif
