@@ -41,8 +41,6 @@ int hermite_interpolate_points_ld(std::vector<LinkageDegree> &vector_ld, double 
 
 int hermite_interpolate_points_lp(std::vector<LinkagePoint> &vector_lp, double x, int rows_table, int columns_count, std::string filename);
 
-void printMatrixTableStyle(const std::vector<std::vector<double>>& matrix);
-
 // Compute Factorial
 
 double compute_factorial(int n);

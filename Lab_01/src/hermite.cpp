@@ -209,17 +209,3 @@ void hermite_invert_derivatives(Matrix &table_derivatives, Matrix &table_derivat
         }
     }
 }
-
-double hermite_logic(Matrix &hermite_table_base, Matrix &hermite_table_interval, Matrix &hermite_table_format, Matrix &hermite_table_derivatives, int data_count, int hermite_interval_points, double x)
-{
-    hermite_init_base_blocks(hermite_table_base);
-    compute_interval_std(hermite_table_base, hermite_table_interval, x, hermite_interval_points);
-    hermite_init_values_blocks(hermite_table_interval, hermite_table_format, data_count);
-    hermite_init_vectors(hermite_table_format);
-    hermite_compute_vectors(hermite_table_format);
-    hermite_compute_derivatives(hermite_table_format, hermite_table_derivatives);
-    hermite_compute_values(hermite_table_format);
-    hermite_table_format.print_cell_value();
-    double result = hermite_interpolate(hermite_table_format, x);
-    return result;
-}

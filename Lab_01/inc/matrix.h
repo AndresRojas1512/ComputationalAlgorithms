@@ -8,6 +8,7 @@
 #include <vector>
 #include <algorithm>
 #include <unordered_map>
+#include <fstream>
 
 class Cell
 {
@@ -32,13 +33,16 @@ class Matrix
         const Cell &get_cell(int row, int col) const;
         int get_rows() const;
         int get_cols() const;
-        void print_cell() const;
         void print_cell_value() const;
         void print_cell_vector() const;
         void print_cell_block() const;
+
+        void print_cell_value_csv(const std::string &filename) const;
+        void print_cell_vector_csv(const std::string &filename) const;
+        void print_cell_block_csv(const std::string &filename) const;
+
         std::vector<Cell> &operator[](int index);
         const std::vector<Cell> &operator[](int index) const;
-        void print_matrix_style() const;
 };
 
 #endif

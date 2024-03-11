@@ -23,6 +23,12 @@ int main(void)
                 case 0:
                 {
                     std::string filename;
+                    std::string newton_values_csv = "newton_values_0.csv";
+                    std::string hermite_values_csv = "hermite_values_0.csv";
+                    std::string newton_vectors_csv = "newton_vectors_0.csv";
+                    std::string hermite_vectors_csv = "hermite_vectors_0.csv";
+                    std::string hermite_blocks_csv = "hermite_blocks_0.csv";
+
                     int lines_count;
                     int columns_count;
                     double x;
@@ -59,6 +65,8 @@ int main(void)
                     newton_compute_values(newton_table_interval, degree);
                     newton_result = newton_interpolate(newton_table_interval, x, degree);
                     std::cout << "Результат (Ньютон): " << newton_result << std::endl;
+                    newton_table_interval.print_cell_value_csv(newton_values_csv);
+                    newton_table_interval.print_cell_vector_csv(newton_vectors_csv);
                     // ---------- HERMITE ----------
                     double hermite_result;
                     int data_count = columns_count - 1;
@@ -81,6 +89,9 @@ int main(void)
                     hermite_compute_values(table_hermite);
                     hermite_result = hermite_interpolate(table_hermite, x);
                     std::cout << "Результат (Эрмит): " << hermite_result << std::endl;
+                    table_hermite.print_cell_value_csv(hermite_values_csv);
+                    table_hermite.print_cell_block_csv(hermite_blocks_csv);
+                    table_hermite.print_cell_vector_csv(hermite_vectors_csv);
                     break;
                 }
                 case 1: // Comparar resultados
@@ -141,6 +152,11 @@ int main(void)
                 case 2: // Encontrar raiz
                 {
                     std::string filename;
+                    std::string newton_values_csv = "newton_values_2.csv";
+                    std::string hermite_values_csv = "hermite_values_2.csv";
+                    std::string newton_vectors_csv = "newton_vectors_2.csv";
+                    std::string hermite_vectors_csv = "hermite_vectors_2.csv";
+                    std::string hermite_blocks_csv = "hermite_blocks_2.csv";
                     int lines_count;
                     int columns_count;
                     double y = 0.0;
@@ -159,7 +175,7 @@ int main(void)
                     int rows_table = lines_count - 1;
                     // -------- NEWTON --------
                     double newton_result;
-                    int standard_degree = 4;
+                    int standard_degree = 2;
                     Matrix newton_table_base(rows_table, standard_degree + 2);
                     Matrix newton_table_inverted(rows_table, standard_degree + 2);
                     Matrix newton_table_interval(rows_table, standard_degree + 2);
@@ -173,8 +189,10 @@ int main(void)
                     newton_compute_values(newton_table_interval, standard_degree);
                     newton_result = newton_interpolate(newton_table_interval, y, standard_degree);
                     std::cout << "Результат (Ньютон): " << newton_result << std::endl;
+                    newton_table_interval.print_cell_value_csv(newton_values_csv);
+                    newton_table_interval.print_cell_vector_csv(newton_vectors_csv);
                     // ---------- HERMITE ----------
-                    int standard_points = 4;
+                    int standard_points = 2;
                     int data_count = columns_count - 1;
                     Matrix hermite_table_base(rows_table, 2);
                     Matrix hermite_table_base_inverted(rows_table, 2);
@@ -194,13 +212,22 @@ int main(void)
                     newton_inverse(hermite_table_base, hermite_table_base_inverted);
                     hermite_init_base_blocks(hermite_table_base_inverted);
                     compute_interval_std(hermite_table_base_inverted, hermite_table_interval, y, standard_points - 1);
+                    // std::cout << "Hermite interval: " << std::endl;
+                    // hermite_table_interval.print_cell_value();
                     hermite_init_values_blocks(hermite_table_interval, hermite_table_format, data_count);
                     hermite_init_vectors(hermite_table_format);
                     hermite_compute_vectors(hermite_table_format);
                     hermite_compute_derivatives(hermite_table_format, hermite_table_derivatives_inverted);
+                    // std::cout << "Hermite derivatives: " << std::endl;
+                    // hermite_table_format.print_cell_value();
                     hermite_compute_values(hermite_table_format);
+                    // std::cout << "Hermite values: " << std::endl;
+                    // hermite_table_format.print_cell_value();
                     double result = hermite_interpolate(hermite_table_format, y);
-                    std::cout << "Результат (Эрмит): " << result << std::endl;
+                    std::cout << "Результат(Эрмит): " << result << std::endl;
+                    hermite_table_format.print_cell_value_csv(hermite_values_csv);
+                    hermite_table_format.print_cell_vector_csv(hermite_vectors_csv);
+                    hermite_table_format.print_cell_block_csv(hermite_blocks_csv);
                     break;
                 }
                 case 3: // Resolver sistema
@@ -274,7 +301,7 @@ int main(void)
             }
         }
     }
-    while (choice != 0 || choice != 4);
+    while (choice != 4);
 
     return 0;
 }
