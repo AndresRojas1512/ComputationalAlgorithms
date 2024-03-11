@@ -15,7 +15,7 @@ int main(void)
     {
         menu();
         if (input_choice(&choice))
-            puts("\nError: Enter option 0 - 3");
+            puts("\nОшибка. Ввод действия");
         else
         {
             switch (choice)
@@ -29,13 +29,13 @@ int main(void)
                     int degree;
                     int points;
                     // Input data
-                    std::cout << "Enter file name: ";
+                    std::cout << "Введите имя файла: ";
                     std::cin >> filename;
-                    std::cout << "Enter Newton degree: ";
+                    std::cout << "Введите степень полинома Ньютона: ";
                     std::cin >> degree;
-                    std::cout << "Enter Hermite points: ";
+                    std::cout << "Введите количество узлов для полинома Эрмита: ";
                     std::cin >> points;
-                    std::cout << "Enter X: ";
+                    std::cout << "Введите X: ";
                     std::cin >> x;
                     // Validate - Get data
                     exit_code = file_count_lines(filename, lines_count);
@@ -58,7 +58,7 @@ int main(void)
                     newton_compute_vectors(newton_table_interval, degree);
                     newton_compute_values(newton_table_interval, degree);
                     newton_result = newton_interpolate(newton_table_interval, x, degree);
-                    std::cout << "Result: " << newton_result << std::endl;
+                    std::cout << "Результат (Ньютон): " << newton_result << std::endl;
                     // ---------- HERMITE ----------
                     double hermite_result;
                     int data_count = columns_count - 1;
@@ -80,7 +80,7 @@ int main(void)
                     hermite_compute_derivatives(table_hermite, table_derivatives);
                     hermite_compute_values(table_hermite);
                     hermite_result = hermite_interpolate(table_hermite, x);
-                    std::cout << "Result: " << hermite_result << std::endl;
+                    std::cout << "Результат (Эрмит): " << hermite_result << std::endl;
                     break;
                 }
                 case 1: // Comparar resultados
@@ -90,9 +90,9 @@ int main(void)
                     int columns_count;
                     double x;
                     // Input
-                    std::cout << "Enter file name: ";
+                    std::cout << "Введите имя файла: ";
                     std::cin >> filename;
-                    std::cout << "Enter x: ";
+                    std::cout << "Введите Х";
                     std::cin >> x;
                     // Validate-Get Data
                     exit_code = file_count_lines(filename, lines_count);
@@ -145,7 +145,7 @@ int main(void)
                     int columns_count;
                     double y = 0.0;
                     // Input
-                    std::cout << "Enter file name: ";
+                    std::cout << "Введите имя файла: ";
                     std::cin >> filename;
                     // Validate-Get Data
                     exit_code = file_count_lines(filename, lines_count);
@@ -172,7 +172,7 @@ int main(void)
                     newton_compute_vectors(newton_table_interval, standard_degree);
                     newton_compute_values(newton_table_interval, standard_degree);
                     newton_result = newton_interpolate(newton_table_interval, y, standard_degree);
-                    std::cout << "Root: " << newton_result << std::endl;
+                    std::cout << "Результат (Ньютон): " << newton_result << std::endl;
                     // ---------- HERMITE ----------
                     int standard_points = 4;
                     int data_count = columns_count - 1;
@@ -200,22 +200,21 @@ int main(void)
                     hermite_compute_derivatives(hermite_table_format, hermite_table_derivatives_inverted);
                     hermite_compute_values(hermite_table_format);
                     double result = hermite_interpolate(hermite_table_format, y);
-                    std::cout << "Result: " << result << std::endl;
+                    std::cout << "Результат (Эрмит): " << result << std::endl;
                     break;
                 }
                 case 3: // Resolver sistema
                 {
-                    std::cout << "System solving" << std::endl;
                     std::string filename_fx;
                     std::string filename_gx;
                     std::vector<double> results;
                     int lines_count;
                     int columns_count;
 
-                    std::cout << "Enter filename_fx: ";
+                    std::cout << "Введите имя файля для f(x): ";
                     std::cin >> filename_fx;
 
-                    std::cout << "Enter file_gx: ";
+                    std::cout << "Введите имя файля для g(x): ";
                     std::cin >> filename_gx;
 
                     exit_code = file_count_lines(filename_fx, lines_count);

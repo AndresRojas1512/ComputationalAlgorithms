@@ -15,7 +15,7 @@ class Cell
         double value;
         std::vector<int> integers;
         int block;
-        Cell(double val = -1, int block_param = -1);
+        Cell(double val = 0, int block_param = -1);
 };
 
 class Matrix

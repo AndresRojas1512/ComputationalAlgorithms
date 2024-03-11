@@ -164,7 +164,7 @@ int newton_interpolate_degrees_ld(std::vector<LinkageDegree> vector_ld, double x
             newton_compute_vectors(newton_table_interval, vector_ld[i].newton_degree);
             newton_compute_values(newton_table_interval, vector_ld[i].newton_degree);
             double result = newton_interpolate(newton_table_interval, x, vector_ld[i].newton_degree);
-            std::cout << "Degree: " << vector_ld[i].newton_degree << ", Result: " << result << std::endl;
+            std::cout << "Степень: " << vector_ld[i].newton_degree << ", Результат: " << result << std::endl;
         }
     }
     return exit_code;
@@ -185,7 +185,7 @@ int newton_interpolate_degrees_lp(std::vector<LinkagePoint> vector_lp, double x,
             newton_compute_vectors(newton_table_interval, vector_lp[i].newton_degree);
             newton_compute_values(newton_table_interval, vector_lp[i].newton_degree);
             double result = newton_interpolate(newton_table_interval, x, vector_lp[i].newton_degree);
-            // std::cout << "Degree: " << vector_lp[i].newton_degree << ", Result: " << result << std::endl;
+            std::cout << "Степень: " << vector_lp[i].newton_degree << ", Результат: " << result << std::endl;
         }
     }
     return exit_code;
