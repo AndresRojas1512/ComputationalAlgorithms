@@ -1,7 +1,7 @@
 #include "hermite.h"
 
 // Init the X and Y columns with block index
-void init_base_matrix_blocks(Matrix &matrix)
+void hermite_init_base_blocks(Matrix &matrix)
 {
     for (int i = 0; i < matrix.get_rows(); i++)
     {
@@ -11,7 +11,7 @@ void init_base_matrix_blocks(Matrix &matrix)
 }
 
 // Multiply the rows by the amount of data that is given about the function
-void init_hermite_table(Matrix &table_interval, Matrix &table_hermite, int data_count)
+void hermite_init_values_blocks(Matrix &table_interval, Matrix &table_hermite, int data_count)
 {
     for (int i = 0; i < table_interval.get_rows(); i++)
     {
@@ -28,7 +28,7 @@ void init_hermite_table(Matrix &table_interval, Matrix &table_hermite, int data_
 }
 
 // Init the divided differences vector of X and Y columns
-void init_hermite_matrix_vectors(Matrix &matrix)
+void hermite_init_vectors(Matrix &matrix)
 {
     int index = 0;
     for (int row = 0; row < matrix.get_rows(); row++)
@@ -40,7 +40,7 @@ void init_hermite_matrix_vectors(Matrix &matrix)
 }
 
 // Compute the divided difference vectors for each cell 
-void compute_hermite_cells_vectors(Matrix &matrix)
+void hermite_compute_vectors(Matrix &matrix)
 {
     for (int col = 2; col < matrix.get_cols(); col++)
     {
@@ -62,7 +62,7 @@ void compute_hermite_cells_vectors(Matrix &matrix)
 }
 
 // Add the derivatives where needed
-void compute_hermite_derivatives(Matrix &matrix, Matrix &derivatives)
+void hermite_compute_derivatives(Matrix &matrix, Matrix &derivatives)
 {
     int derivative_index = 0; // derivative degree
     for (int col = 2; col < matrix.get_cols(); col++)
@@ -86,7 +86,7 @@ void compute_hermite_derivatives(Matrix &matrix, Matrix &derivatives)
 }
 
 // Based on the divided differences vector, calculate the values
-void compute_hermite_cells_values(Matrix &matrix)
+void hermite_compute_values(Matrix &matrix)
 {
     for (int col = 2; col < matrix.get_cols(); col++)
     {
@@ -105,7 +105,7 @@ void compute_hermite_cells_values(Matrix &matrix)
     }
 }
 
-double interpolate_hermite(const Matrix &table_hermite, double x)
+double hermite_interpolate(const Matrix &table_hermite, double x)
 {
     double result = table_hermite[0][1].value; // Starting with y0
     double term = 1.0;
@@ -128,7 +128,7 @@ double compute_factorial(int n)
     return result;
 }
 
-int interpolate_points_hermite_ld(std::vector<LinkageDegree> &vector_ld, double x, int rows_table, int columns_count, std::string filename)
+int hermite_interpolate_points_ld(std::vector<LinkageDegree> &vector_ld, double x, int rows_table, int columns_count, std::string filename)
 {
     int exit_code = EXIT_SUCCESS;
     int data_count = columns_count - 1;
@@ -138,20 +138,20 @@ int interpolate_points_hermite_ld(std::vector<LinkageDegree> &vector_ld, double 
         Matrix table_interval(vector_ld[i].hermite_points, 2);
         Matrix table_hermite(vector_ld[i].hermite_points * data_count, (vector_ld[i].hermite_points * data_count) + 1);
         Matrix table_derivatives(rows_table, columns_count - 2);
-        exit_code = file_parse_newton(table_input, filename);
+        exit_code = file_parse_std(table_input, filename);
         if (!exit_code)
         {
             exit_code = file_parse_derivatives(table_derivatives, filename);
             if (!exit_code)
             {
-                init_base_matrix_blocks(table_input);
-                compute_table_interval_newton(table_input, table_interval, x, vector_ld[i].hermite_points - 1);
-                init_hermite_table(table_interval, table_hermite, data_count);
-                init_hermite_matrix_vectors(table_hermite);
-                compute_hermite_cells_vectors(table_hermite);
-                compute_hermite_derivatives(table_hermite, table_derivatives);
-                compute_hermite_cells_values(table_hermite);
-                double result = interpolate_hermite(table_hermite, x);
+                hermite_init_base_blocks(table_input);
+                compute_interval_std(table_input, table_interval, x, vector_ld[i].hermite_points - 1);
+                hermite_init_values_blocks(table_interval, table_hermite, data_count);
+                hermite_init_vectors(table_hermite);
+                hermite_compute_vectors(table_hermite);
+                hermite_compute_derivatives(table_hermite, table_derivatives);
+                hermite_compute_values(table_hermite);
+                double result = hermite_interpolate(table_hermite, x);
                 std::cout << "Points: " << vector_ld[i].hermite_points << ", Result: " << result << std::endl;
             }
         }
@@ -159,7 +159,7 @@ int interpolate_points_hermite_ld(std::vector<LinkageDegree> &vector_ld, double 
     return exit_code;
 }
 
-int interpolate_points_hermite_lp(std::vector<LinkagePoint> &vector_lp, double x, int rows_table, int columns_count, std::string filename)
+int hermite_interpolate_points_lp(std::vector<LinkagePoint> &vector_lp, double x, int rows_table, int columns_count, std::string filename)
 {
     int exit_code = EXIT_SUCCESS;
     int data_count = columns_count - 1;
@@ -169,20 +169,20 @@ int interpolate_points_hermite_lp(std::vector<LinkagePoint> &vector_lp, double x
         Matrix table_interval(vector_lp[i].hermite_points, 2);
         Matrix table_hermite(vector_lp[i].hermite_points * data_count, (vector_lp[i].hermite_points * data_count) + 1);
         Matrix table_derivatives(rows_table, columns_count - 2);
-        exit_code = file_parse_newton(table_input, filename);
+        exit_code = file_parse_std(table_input, filename);
         if (!exit_code)
         {
             exit_code = file_parse_derivatives(table_derivatives, filename);
             if (!exit_code)
             {
-                init_base_matrix_blocks(table_input);
-                compute_table_interval_newton(table_input, table_interval, x, vector_lp[i].hermite_points - 1);
-                init_hermite_table(table_interval, table_hermite, data_count);
-                init_hermite_matrix_vectors(table_hermite);
-                compute_hermite_cells_vectors(table_hermite);
-                compute_hermite_derivatives(table_hermite, table_derivatives);
-                compute_hermite_cells_values(table_hermite);
-                double result = interpolate_hermite(table_hermite, x);
+                hermite_init_base_blocks(table_input);
+                compute_interval_std(table_input, table_interval, x, vector_lp[i].hermite_points - 1);
+                hermite_init_values_blocks(table_interval, table_hermite, data_count);
+                hermite_init_vectors(table_hermite);
+                hermite_compute_vectors(table_hermite);
+                hermite_compute_derivatives(table_hermite, table_derivatives);
+                hermite_compute_values(table_hermite);
+                double result = hermite_interpolate(table_hermite, x);
                 std::cout << "Points: " << vector_lp[i].hermite_points << ", Result: " << result << std::endl;
             }
         }
@@ -191,7 +191,7 @@ int interpolate_points_hermite_lp(std::vector<LinkagePoint> &vector_lp, double x
 }
 
 // Inverse interpolation
-void invert_table_derivatives(Matrix &table_derivatives, Matrix &table_derivatives_inverted)
+void hermite_invert_derivatives(Matrix &table_derivatives, Matrix &table_derivatives_inverted)
 {
     double epsilon = std::numeric_limits<double>::epsilon();
     for (int i = 0; i < table_derivatives.get_rows(); i++)
@@ -208,4 +208,18 @@ void invert_table_derivatives(Matrix &table_derivatives, Matrix &table_derivativ
             }
         }
     }
+}
+
+double hermite_logic(Matrix &hermite_table_base, Matrix &hermite_table_interval, Matrix &hermite_table_format, Matrix &hermite_table_derivatives, int data_count, int hermite_interval_points, double x)
+{
+    hermite_init_base_blocks(hermite_table_base);
+    compute_interval_std(hermite_table_base, hermite_table_interval, x, hermite_interval_points);
+    hermite_init_values_blocks(hermite_table_interval, hermite_table_format, data_count);
+    hermite_init_vectors(hermite_table_format);
+    hermite_compute_vectors(hermite_table_format);
+    hermite_compute_derivatives(hermite_table_format, hermite_table_derivatives);
+    hermite_compute_values(hermite_table_format);
+    hermite_table_format.print_cell_value();
+    double result = hermite_interpolate(hermite_table_format, x);
+    return result;
 }

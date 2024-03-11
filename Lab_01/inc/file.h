@@ -17,7 +17,7 @@ typedef enum error
     ERROR_PARSING
 } file_error_t;
 
-file_error_t file_parse_newton(Matrix &matrix, const std::string &filename);
+file_error_t file_parse_std(Matrix &matrix, const std::string &filename);
 file_error_t file_parse_hermite(Matrix &matrix, const std::string &filename, int data_count);
 file_error_t file_parse_derivatives(Matrix &matrix_derivatives, const std::string &filename);
 

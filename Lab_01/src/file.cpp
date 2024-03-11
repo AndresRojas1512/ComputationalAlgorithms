@@ -5,7 +5,7 @@
 #include <sstream>
 #include <string>
 
-file_error_t file_parse_newton(Matrix &matrix, const std::string &filename)
+file_error_t file_parse_std(Matrix &matrix, const std::string &filename)
 {
     FILE *file = fopen(filename.c_str(), "r");
     if (!file)
