@@ -1,39 +1,52 @@
 #include "newton.h"
 
-void compute_interval_std(const Matrix& input_matrix, Matrix& output_matrix, double x, int n) {
-    n += 1;  // Adjust to get n + 1 elements for the interval
+void compute_interval_std(const Matrix& input_matrix, Matrix& output_matrix, double x, int n)
+{
+    n += 1;
     int rows = input_matrix.get_rows();
-    int bestStartIndex = -1;
-    double minDiff = std::numeric_limits<double>::max();
+    int best_start_index = 0;
+    double min_diff = std::numeric_limits<double>::max();
 
-    // Iterate to find the point where x fits between positive and negative values
-    for (int i = 0; i < rows - 1; ++i) {
-        double currentValue = input_matrix[i][0].value;
-        double nextValue = input_matrix[i + 1][0].value;
-
-        // Look for where x would fit between the transition from positive to negative or vice versa
-        if ((currentValue <= x && x <= nextValue) || (currentValue >= x && x >= nextValue)) {
-            double diff = std::abs(currentValue - x) + std::abs(nextValue - x);
-            if (diff < minDiff) {
-                minDiff = diff;
-                bestStartIndex = i;
+    for (int i = 0; i <= rows - n; ++i)
+    {
+        double left_value = input_matrix[i][0].value;
+        double right_value = input_matrix[i + n - 1][0].value;
+        
+        if (left_value <= x && x <= right_value)
+        {
+            double diff = std::abs((right_value - left_value) / 2 + left_value - x);
+            if (diff < min_diff)
+            {
+                min_diff = diff;
+                best_start_index = i;
+            }
+        }
+        else if (x < left_value)
+        {
+            double diff = left_value - x;
+            if (diff < min_diff)
+            {
+                min_diff = diff;
+                best_start_index = i;
+            }
+        }
+        else if (x > right_value)
+        {
+            double diff = x - right_value;
+            if (diff < min_diff)
+            {
+                min_diff = diff;
+                best_start_index = i;
             }
         }
     }
 
-    // Adjust start index to collect n+1 elements, ensuring it doesn't overflow the table bounds
-    int startIndex = bestStartIndex - n / 2;
-    if (startIndex < 0) {
-        startIndex = 0;  // Adjust to start of the table if overflow
-    } else if (startIndex + n > rows) {
-        startIndex = rows - n;  // Adjust to end of the table if overflow
-    }
-
-    // Generate output matrix based on the identified interval
-    output_matrix = Matrix(n, input_matrix.get_cols()); // Assuming Matrix can be resized or reinitialized
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < input_matrix.get_cols(); ++j) {
-            output_matrix[i][j] = input_matrix[startIndex + i][j];
+    output_matrix = Matrix(n, input_matrix.get_cols());
+    for (int i = 0; i < n; ++i)
+    {
+        for (int j = 0; j < input_matrix.get_cols(); ++j)
+        {
+            output_matrix[i][j] = input_matrix[best_start_index + i][j];
         }
     }
 }

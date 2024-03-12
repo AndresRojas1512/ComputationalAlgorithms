@@ -60,6 +60,8 @@ int main(void)
                     if (exit_code)
                         return exit_code;
                     compute_interval_std(newton_table_base, newton_table_interval, x, degree);
+                    std::cout << "Interval" << std::endl;
+                    newton_table_interval.print_cell_value();
                     newton_init_vectors(newton_table_interval);
                     newton_compute_vectors(newton_table_interval, degree);
                     newton_compute_values(newton_table_interval, degree);
@@ -83,6 +85,8 @@ int main(void)
                     hermite_init_base_blocks(table_input);
                     compute_interval_std(table_input, table_interval, x, points - 1);
                     hermite_init_values_blocks(table_interval, table_hermite, data_count);
+                    std::cout << "Hermite configuration:" << std::endl;
+                    table_hermite.print_cell_value();
                     hermite_init_vectors(table_hermite);
                     hermite_compute_vectors(table_hermite);
                     hermite_compute_derivatives(table_hermite, table_derivatives);
@@ -184,6 +188,7 @@ int main(void)
                         return exit_code;
                     newton_inverse(newton_table_base, newton_table_inverted);
                     compute_interval_std(newton_table_inverted, newton_table_interval, y, standard_degree);
+                    newton_table_interval.print_cell_value();
                     newton_init_vectors(newton_table_interval);
                     newton_compute_vectors(newton_table_interval, standard_degree);
                     newton_compute_values(newton_table_interval, standard_degree);

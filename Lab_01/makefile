@@ -24,4 +24,4 @@ $(OUT):
 	mkdir -p $@
 
 clean:
-	rm -f -r $(OUT) *.exe
+	rm -f -r $(OUT) *.exe hermite_blocks_0.csv hermite_blocks.csv hermite_values_0.csv hermite_values.csv hermite_vectors.csv hermite_vectors_0.csv newton_values_0.csv newton_values.csv newton_vectors_0.csv newton_vectors.csv

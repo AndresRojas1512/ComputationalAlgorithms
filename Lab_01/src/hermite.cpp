@@ -111,7 +111,8 @@ double hermite_interpolate(const Matrix &table_hermite, double x)
     double term = 1.0;
     
     // Loop through the table using the divided differences
-    for (int i = 1; i < table_hermite.get_cols() - 1; ++i) { // Note the change here to get_cols() - 1
+    for (int i = 1; i < table_hermite.get_cols() - 1; i++)
+    { // Note the change here to get_cols() - 1
         term *= (x - table_hermite[i - 1][0].value); // Constructing the (x - xi) term correctly
         result += table_hermite[0][i + 1].value * term; // Accessing the coefficients correctly
     }
