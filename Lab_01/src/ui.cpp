@@ -3,11 +3,11 @@
 void menu(void)
 {
     std::cout << std::endl;
-    puts("0. Standard Interpolation.");
-    puts("1. Interpolation for many degrees");
-    puts("2. Solve root");
-    puts("3. Solve system");
-    puts("4. Exit.");
+    puts("0. Интерполяция.");
+    puts("1. Сравнение интерполяций.");
+    puts("2. Решение уравнения.");
+    puts("3. Решение системы.");
+    puts("4. Выход.");
 }
 
 int input_choice(int *choice)
