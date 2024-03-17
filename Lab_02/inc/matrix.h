@@ -1,6 +1,7 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#include <iostream>
 #include <cmath>
 #include <limits>
 #include <iomanip>
@@ -12,7 +13,9 @@
 class Cell
 {
     public:
-        double coefficient;
+        double value;
+        int index;
+        Cell(double val = 0, int i = -1);
 };
 
 class Matrix
@@ -24,9 +27,12 @@ class Matrix
     public:
         Matrix (int r, int c);
 
-        // Getters
         int get_rows() const;
         int get_cols() const;
+
+        std::vector<Cell> &operator[](int index);
+        const std::vector<Cell> &operator[](int index) const;
+        void print_cell_value() const;
 };
 
 #endif
