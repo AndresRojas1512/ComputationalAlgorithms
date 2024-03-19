@@ -4,6 +4,8 @@ Spline::Spline(Point &point_left_param, Point &point_right_param, int index_para
 {
 }
 
+// Getters
+
 std::vector<double> &Spline::get_coefficients()
 {
     return coefficients;
@@ -27,6 +29,16 @@ double Spline::get_h()
 double Spline::get_index()
 {
     return index;
+}
+
+double Spline::get_xi()
+{
+    return xi;
+}
+
+double Spline::get_eta()
+{
+    return eta;
 }
 
 // Setters
@@ -55,27 +67,37 @@ void Spline::set_index(int index_param)
     index = index_param;
 }
 
-// Algorithm
-
 void Spline::set_a(double a_coef)
 {
-    coefficients[A] = a_coef;
+    coefficients[A_idx] = a_coef;
 }
 
 void Spline::set_b(double b_coef)
 {
-    coefficients[B] = b_coef;
+    coefficients[B_idx] = b_coef;
 }
 
 void Spline::set_c(double c_coef)
 {
-    coefficients[C] = c_coef;
+    coefficients[C_idx] = c_coef;
 }
 
 void Spline::set_d(double d_coef)
 {
-    coefficients[D] = d_coef;
+    coefficients[D_idx] = d_coef;
 }
+
+void Spline::set_xi(double xi_param)
+{
+    xi = xi_param;
+}
+
+void Spline::set_eta(double eta_param)
+{
+    eta = eta_param;
+}
+
+// Algorithm
 
 void Spline::compute_h(double x_left, double x_right)
 {
@@ -125,7 +147,21 @@ void splines_compute_a(std::vector<Spline> &splines)
 
 void splines_compute_xi(std::vector<Spline> &splines)
 {
-    for (unsigned long int i = 2; i <= splines.size(); i++)
+    splines[1].set_xi(0);
+    for (unsigned long int i = 1; i < splines.size(); i++)
+    {
+        double Di = splines[i].get_h();
+        double Bi = -2 * (splines[i - 1].get_h() + splines[i].get_h());
+        double Ai = splines[i - 1].get_h();
+        double xi = Di / (Bi - (Ai * splines[i].get_xi()));
+        splines[i + 1].set_xi(xi);
+    }
+}
+
+void splines_compute_eta(std::vector<Spline> &splines)
+{
+    splines[1].set_eta(0);
+    for (unsigned long int i = 1; i < splines.size(); i++)
     {
         // TODO
     }
