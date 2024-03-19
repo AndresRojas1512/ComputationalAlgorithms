@@ -1,6 +1,7 @@
 #include <iostream>
 #include "matrix.h"
 #include "file.h"
+#include "point.h"
 #include "spline.h"
 #include "ui.h"
 
@@ -33,16 +34,17 @@ int main(void)
                         return exit_code;
                     // Prepare data
                     int rows_table = lines_count - 1;
-                    int splines_n = rows_table - 1;
+
                     Matrix table_src(rows_table, COLUMNS_COUNT);
-                    Matrix table_coefs(splines_n, 4);
-                    std::vector<double> steps;
+                    std::vector<Spline> splines;
+
                     exit_code = file_parse_std(table_src, filename);
                     if (exit_code)
                         return exit_code;
-                    table_coefs.print_cell_value();
-                    spline_compute_steps(steps, table_src, splines_n);
-                    
+                    splines_init_vector(splines, table_src);
+                    splines_compute_a(splines);
+                    splines_compute_h(splines);
+                    splines_print(splines);
                     break;
                 }
                 case 1:

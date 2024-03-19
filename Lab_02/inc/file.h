@@ -2,6 +2,7 @@
 #define FILE_H
 
 #include <iostream>
+#include <fstream>
 #include "matrix.h"
 
 #define BUFFER_SIZE 256

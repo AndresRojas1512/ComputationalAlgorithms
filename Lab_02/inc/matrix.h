@@ -3,36 +3,25 @@
 
 #include <iostream>
 #include <cmath>
-#include <limits>
-#include <iomanip>
 #include <vector>
+#include <iomanip>
 #include <algorithm>
-#include <unordered_map>
-#include <fstream>
-
-class Cell
-{
-    public:
-        double value;
-        int spline_index;
-
-        Cell(double val = 0, int i = -1);
-};
+#include <utility>
 
 class Matrix
 {
     private:
         int rows;
         int cols;
-        std::vector<std::vector<Cell>> data;
+        std::vector<std::vector<double>> data;
     public:
         Matrix (int r, int c);
 
         int get_rows() const;
         int get_cols() const;
 
-        std::vector<Cell> &operator[](int index);
-        const std::vector<Cell> &operator[](int index) const;
+        std::vector<double> &operator[](int index);
+        const std::vector<double> &operator[](int index) const;
         void print_cell_value() const;
 };
 
