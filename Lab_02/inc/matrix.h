@@ -14,7 +14,8 @@ class Cell
 {
     public:
         double value;
-        int index;
+        int spline_index;
+
         Cell(double val = 0, int i = -1);
 };
 

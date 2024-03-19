@@ -1,6 +1,6 @@
 #include "matrix.h"
 
-Cell::Cell(double val, int i) : value(val), index(i)
+Cell::Cell(double val, int i) : value(val), spline_index(i)
 {
 }
 

@@ -1,12 +1,13 @@
 #include "spline.h"
 
-void spline_comput_vector_indices(std::vector<Cell> &steps, int splines_n)
+void spline_compute_vector_indices(std::vector<Cell> &steps, int splines_n)
 {
     for (int i = 0; i < splines_n; i++)
     {
-        steps[i].index = i + 1;
+        steps[i].spline_index = i + 1;
     }
 }
+
 void spline_compute_steps(std::vector<Cell> &steps, Matrix &table_src, int splines_n)
 {
     int exit_code = EXIT_SUCCESS;
@@ -21,7 +22,7 @@ void spline_vector_print_values(const std::vector<Cell> &vector)
 {
     for (const Cell &elem : vector)
     {
-        // TODO
+        std::cout << elem.value << std::endl;
     }
     std::cout << std::endl;
 }
@@ -37,3 +38,4 @@ void spline_coefs_init(Matrix &splines_coefs)
         }
     }
 }
+
