@@ -44,6 +44,6 @@ int Point::get_index()
 
 std::ostream &operator<<(std::ostream &out, Point &point)
 {
-    out << "I: " << point.get_index() << "-[X: " << point.get_x() << ", " << "Y: " << point.get_y() << "]";
+    out << "I:" << point.get_index() << "[" << point.get_x() << ", " << point.get_y() << "]";
     return out;
 }

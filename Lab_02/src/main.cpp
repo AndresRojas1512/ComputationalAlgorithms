@@ -42,8 +42,12 @@ int main(void)
                     if (exit_code)
                         return exit_code;
                     splines_init_vector(splines, table_src);
-                    splines_compute_a(splines);
                     splines_compute_h(splines);
+                    splines_compute_a(splines);
+                    splines_compute_xi(splines);
+                    std::cout << "Xi Eta:" << std::endl;
+                    splines_print_xi_eta(splines);
+                    std::cout << "Spline:" << std::endl;
                     splines_print(splines);
                     break;
                 }

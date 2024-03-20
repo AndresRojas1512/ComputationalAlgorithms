@@ -34,6 +34,10 @@ class Spline
         double get_index();
         double get_xi();
         double get_eta();
+        double get_a();
+        double get_b();
+        double get_c();
+        double get_d();
 
         // Setters
         void set_coefficients(std::vector<double> &coefficients_param);
@@ -50,6 +54,9 @@ class Spline
 
         // Algorithm
         void compute_h(double x_left, double x_right);
+
+        // Print
+        void print_xi_eta();
 };
 
 void splines_init_vector(std::vector<Spline> &splines, Matrix &table_src);
@@ -58,10 +65,18 @@ void splines_print(std::vector<Spline> &splines);
 
 void splines_compute_a(std::vector<Spline> &splines);
 
+void splines_compute_b(std::vector<Spline> &splines);
+
+void splines_compute_c(std::vector<Spline> &splines);
+
+void splines_compute_d(std::vector<Spline> &splines);
+
 void splines_compute_h(std::vector<Spline> &splines);
 
 void splines_compute_xi(std::vector<Spline> &splines);
 
 void splines_compute_eta(std::vector<Spline> &splines);
+
+void splines_print_xi_eta(std::vector<Spline> &splines);
 
 #endif
