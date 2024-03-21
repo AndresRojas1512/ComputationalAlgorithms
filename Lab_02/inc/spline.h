@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cmath>
 #include "matrix.h"
 #include "point.h"
 
@@ -54,6 +55,7 @@ class Spline
 
         // Algorithm
         void compute_h(double x_left, double x_right);
+        double spline_interpolate(double x);
 
         // Print
         void print_xi_eta();
@@ -72,6 +74,8 @@ void splines_compute_bn(std::vector<Spline> &splines);
 void splines_compute_c(std::vector<Spline> &splines);
 
 void splines_compute_d(std::vector<Spline> &splines);
+
+void splines_compute_dn(std::vector<Spline> &splines);
 
 void splines_compute_h(std::vector<Spline> &splines);
 

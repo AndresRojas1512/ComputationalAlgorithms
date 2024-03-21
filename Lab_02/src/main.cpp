@@ -49,7 +49,13 @@ int main(void)
                     splines_compute_c(splines);
                     splines_compute_b(splines);
                     splines_compute_bn(splines);
+                    splines_compute_d(splines);
+                    splines_compute_dn(splines);
                     splines_print(splines);
+
+                    double x = 0.6;
+                    double y = splines[1].spline_interpolate(x);
+                    std::cout << "Y: " << y << std::endl;
                     break;
                 }
                 case 1:

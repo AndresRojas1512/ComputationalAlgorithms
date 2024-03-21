@@ -181,7 +181,7 @@ void splines_compute_b(std::vector<Spline> &splines) // DONE
     }
 }
 
-void splines_compute_bn(std::vector<Spline> &splines) // TODO : check
+void splines_compute_bn(std::vector<Spline> &splines) // DONE
 {
     double bn = ((splines[splines.size() - 1].get_point_right().get_y() - splines[splines.size() - 1].get_point_left().get_y()) / splines[splines.size() - 1].get_h()) - (2/3 * splines[splines.size() - 1].get_h() * splines[splines.size() - 1].get_c());
     splines[splines.size() - 1].set_b(bn);
@@ -215,13 +215,19 @@ void splines_compute_c(std::vector<Spline> &splines) // DONE
     }
 }
 
-void splines_compute_d(std::vector<Spline> &splines) // TODO : check
+void splines_compute_d(std::vector<Spline> &splines) // DONE
 {
     for (long unsigned int i = 0; i < (splines.size() - 1); i++)
     {
         double di = (splines[i + 1].get_c() - splines[i].get_c()) / (3 * splines[i].get_h());
         splines[i].set_d(di);
     }
+}
+
+void splines_compute_dn(std::vector<Spline> &splines) // DONE
+{
+    double dn = - (splines[splines.size() - 1].get_c() / (3 * splines[splines.size() - 1].get_h()));
+    splines[splines.size() - 1].set_d(dn);
 }
 
 void splines_compute_xi(std::vector<Spline> &splines) // DONE
@@ -249,6 +255,12 @@ void splines_compute_eta(std::vector<Spline> &splines) // DONE
         double eta = ((Fi + (Ai * splines[i].get_eta())) / (Bi - (Ai * splines[i].get_xi())));
         splines[i + 1].set_eta(eta);
     }
+}
+
+double Spline::spline_interpolate(double x)
+{
+    double y = coefficients[0] + coefficients[1] * (x - point_left.get_x()) + coefficients[2] * std::pow(x - point_left.get_x(), 2) * coefficients[3] * std::pow(x - point_left.get_x(), 3);
+    return y;
 }
 
 void splines_print(std::vector<Spline> &splines)
