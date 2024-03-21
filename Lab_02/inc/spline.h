@@ -67,6 +67,8 @@ void splines_compute_a(std::vector<Spline> &splines);
 
 void splines_compute_b(std::vector<Spline> &splines);
 
+void splines_compute_bn(std::vector<Spline> &splines);
+
 void splines_compute_c(std::vector<Spline> &splines);
 
 void splines_compute_d(std::vector<Spline> &splines);

@@ -172,7 +172,7 @@ void splines_compute_a(std::vector<Spline> &splines) // DONE
     }
 }
 
-void splines_compute_b(std::vector<Spline> &splines) // TODO : check
+void splines_compute_b(std::vector<Spline> &splines) // DONE
 {
     for (unsigned long int i = 0; i < (splines.size() - 1); i++)
     {
@@ -181,13 +181,37 @@ void splines_compute_b(std::vector<Spline> &splines) // TODO : check
     }
 }
 
-void splines_compute_c(std::vector<Spline> &splines) // TODO : check
+void splines_compute_bn(std::vector<Spline> &splines) // TODO : check
+{
+    double bn = ((splines[splines.size() - 1].get_point_right().get_y() - splines[splines.size() - 1].get_point_left().get_y()) / splines[splines.size() - 1].get_h()) - (2/3 * splines[splines.size() - 1].get_h() * splines[splines.size() - 1].get_c());
+    splines[splines.size() - 1].set_b(bn);
+}
+
+void splines_compute_c(std::vector<Spline> &splines) // DONE
 {
     splines[0].set_c(0);
-    for (long unsigned int i = 1; i < splines.size(); i++)
+    for (int i = (int)(splines.size() - 1); i >= 0; i--)
     {
-        double Ui = ((splines[i].get_eta() - splines[i - 1].get_c()) / splines[i].get_xi());
-        splines[i].set_c(Ui); 
+        if (i == (int)(splines.size() - 1))
+        {
+            // Xi_i+1
+            double Di = splines[i].get_h();
+            double Bi = - ((2 * splines[i - 1].get_h()) + splines[i].get_h());
+            double Ai = splines[i - 1].get_h();
+            double xi_ovflow_spline = Di / (Bi - (Ai * splines[i].get_xi()));
+
+            // Eta_i+1
+            double Fi = 3 * (((splines[i].get_point_right().get_y() - splines[i - 1].get_point_right().get_y()) / splines[i].get_h()) - ((splines[i - 1].get_point_right().get_y() - splines[i - 1].get_point_left().get_y()) / splines[i - 1].get_h()));
+            double eta_ovflow_spline = ((Fi + (Ai * splines[i].get_eta())) / (Bi - (Ai * splines[i].get_xi())));
+
+            double Ui = (xi_ovflow_spline) * 0 - eta_ovflow_spline;
+            splines[i].set_c(Ui);
+        }
+        else
+        {
+            double Ui = (splines[i + 1].get_xi() * splines[i + 1].get_c()) - splines[i + 1].get_eta();
+            splines[i].set_c(Ui);
+        }
     }
 }
 

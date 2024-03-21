@@ -46,7 +46,10 @@ int main(void)
                     splines_compute_a(splines);
                     splines_compute_xi(splines);
                     splines_compute_eta(splines);
-                    
+                    splines_compute_c(splines);
+                    splines_compute_b(splines);
+                    splines_compute_bn(splines);
+                    splines_print(splines);
                     break;
                 }
                 case 1:
