@@ -214,10 +214,10 @@ void splines_compute_xi(std::vector<Spline> &splines) // DONE
     }
 }
 
-void splines_compute_eta(std::vector<Spline> &splines) // TODO : check
+void splines_compute_eta(std::vector<Spline> &splines) // DONE
 {
     splines[1].set_eta(0);
-    for (unsigned long int i = 1; i < splines.size(); i++)
+    for (unsigned long int i = 1; i < (splines.size() - 1); i++)
     {
         double Fi = 3 * (((splines[i].get_point_right().get_y() - splines[i - 1].get_point_right().get_y()) / splines[i].get_h()) - ((splines[i - 1].get_point_right().get_y() - splines[i - 1].get_point_left().get_y()) / splines[i - 1].get_h()));
         double Ai = splines[i - 1].get_h();
