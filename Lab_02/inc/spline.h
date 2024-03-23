@@ -12,6 +12,8 @@
 #define C_idx 2
 #define D_idx 3
 
+const double epsilon = 1e-9;
+
 class Spline
 {
     private:
@@ -71,7 +73,7 @@ void splines_compute_b(std::vector<Spline> &splines);
 
 void splines_compute_bn(std::vector<Spline> &splines);
 
-void splines_compute_c(std::vector<Spline> &splines);
+void splines_compute_c(std::vector<Spline> &splines, double c_1, double c_Nplus1);
 
 void splines_compute_d(std::vector<Spline> &splines);
 

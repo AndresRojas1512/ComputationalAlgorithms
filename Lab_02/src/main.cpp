@@ -3,6 +3,7 @@
 #include "file.h"
 #include "point.h"
 #include "spline.h"
+#include "newton.h"
 #include "ui.h"
 
 int main(void)
@@ -25,93 +26,78 @@ int main(void)
                     int columns_count;
                     int spline_index;
                     double x;
-
                     // Input
                     std::cout << "Enter the file name: ";
                     std::cin >> filename;
                     std::cout << "Enter the x: ";
                     std::cin >> x;
-                    
+                    // Validate - Get data
                     exit_code = file_count_lines(filename, lines_count);
                     if (exit_code)
                         return exit_code;
                     exit_code = file_count_columns(filename, columns_count);
                     if (exit_code)
                         return exit_code;
-                    
                     // Prepare data
                     int rows_table = lines_count - 1;
-                    
                     // Create objects
                     Matrix table_src(rows_table, COLUMNS_COUNT);
                     std::vector<Spline> splines;
-
+                    // Load table
                     exit_code = file_parse_std(table_src, filename);
                     if (exit_code)
                         return exit_code;
-                    
                     // Spline
                     splines_init_vector(splines, table_src);
                     splines_compute_h(splines);
                     splines_compute_a(splines);
                     splines_compute_xi(splines);
                     splines_compute_eta(splines);
-                    splines_compute_c(splines);
+                    splines_compute_c(splines, 0, 0);
                     splines_compute_b(splines);
                     splines_compute_bn(splines);
                     splines_compute_d(splines);
                     splines_compute_dn(splines);
-
                     exit_code = spline_find(splines, x, spline_index);
                     double y = splines[spline_index].spline_interpolate(x);
                     std::cout << "Y: " << y << std::endl;
                     break;
                 }
-                case 21:
+                case 21: // fi'')(x0) = 0 | fi''(xN) = 0
                 {
                     std::string filename;
                     int lines_count;
                     int columns_count;
                     int spline_index_x0;
                     int spline_index_xN;
-
                     // Input
                     std::cout << "Enter the file name: ";
                     std::cin >> filename;
-
-                    // File data
+                    // Validate - Get data
                     exit_code = file_count_lines(filename, lines_count);
                     if (exit_code)
                         return exit_code;
                     exit_code = file_count_columns(filename, columns_count);
                     if (exit_code)
                         return exit_code;
-                    
-                    // Prepare data
+                    // Prepare data - Create Objects
                     int rows_table = lines_count - 1;
-
-                    // Create objects
                     Matrix table_src(rows_table, COLUMNS_COUNT);
                     std::vector<Spline> splines;
-
                     // Parse file
                     exit_code = file_parse_std(table_src, filename);
                     if (exit_code)
                         return exit_code;
-                    
                     // Get arguments x0 and xN
-                    double x0 = table_src[0][0];
-                    double xN = table_src[table_src.get_rows() - 1][0];
-                    std::cout << "x0: " << x0 << std::endl;
-                    std::cout << "xN: " << xN << std::endl;
-
+                    double x0 = table_src[0][0].value;
+                    double xN = table_src[table_src.get_rows() - 1][0].value;
                     // Spline
                     splines_init_vector(splines, table_src);
                     splines_compute_h(splines);
                     splines_compute_a(splines);
                     splines_compute_xi(splines);
                     splines_compute_eta(splines);
-                    splines_compute_c(splines);
+                    splines_compute_c(splines, 0, 0);
                     splines_compute_b(splines);
                     splines_compute_bn(splines);
                     splines_compute_d(splines);
@@ -129,19 +115,191 @@ int main(void)
 
                     std::cout << "y0: " << y0 << std::endl;
                     std::cout << "yN: " << yN << std::endl;
-                    
                     break;
                 }
-                case 22:
+                case 22: // fi''(x0) = P''(x0) | fi''(xN) = 0
                 {
+                    std::string filename;
+                    int lines_count;
+                    int columns_count;
+                    int spline_index_x0;
+                    int spline_index_xN;
+                    int degree = 3;
+                    // Input
+                    std::cout << "Enter the file name: ";
+                    std::cin >> filename;
+                    // Validate - Get data
+                    exit_code = file_count_lines(filename, lines_count);
+                    if (exit_code)
+                        return exit_code;
+                    exit_code = file_count_columns(filename, columns_count);
+                    if (exit_code)
+                        return exit_code;
+                    // Prepare data - Create Objects
+                    int rows_table = lines_count - 1;
+                    Matrix table_src(rows_table, degree + 2);
+                    Matrix newton_table_interval(degree + 1, degree + 2);
+                    std::vector<Spline> splines;
+                    // Parse file
+                    exit_code = file_parse_std(table_src, filename);
+                    if (exit_code)
+                        return exit_code;
+                    // Get arguments x0 and xN
+                    double x0 = table_src[0][0].value;
+                    double xN = table_src[table_src.get_rows() - 1][0].value;
+                    // ----- NEWTON -----
+                    compute_interval_std(table_src, newton_table_interval, x0, degree);
+                    newton_init_vectors(newton_table_interval);
+                    newton_compute_vectors(newton_table_interval, degree);
+                    newton_compute_values(newton_table_interval, degree);
+                    double newton_dxx = newton_compute_dxx(newton_table_interval, x0);
+                    // ----- SPLINE -----
+                    splines_init_vector(splines, table_src);
+                    splines_compute_h(splines);
+                    splines_compute_a(splines);
+                    splines_compute_xi(splines);
+                    splines_compute_eta(splines);
+                    splines_compute_c(splines, newton_dxx, 0);
+                    splines_compute_b(splines);
+                    splines_compute_bn(splines);
+                    splines_compute_d(splines);
+                    splines_compute_dn(splines);
+
+                    exit_code = spline_find(splines, x0, spline_index_x0);
+                    if (exit_code)
+                        return exit_code;
+                    exit_code = spline_find(splines, xN, spline_index_xN);
+                    if (exit_code)
+                        return exit_code;
+                    
+                    double y0 = splines[spline_index_x0].spline_interpolate(x0);
+                    double yN = splines[spline_index_xN].spline_interpolate(xN);
+
+                    std::cout << "y0: " << y0 << std::endl;
+                    std::cout << "yN: " << yN << std::endl;
                     break;
                 }
                 case 23:
                 {
+                    std::string filename;
+                    int lines_count;
+                    int columns_count;
+                    int spline_index_x0;
+                    int spline_index_xN;
+                    int degree = 3;
+                    // Input
+                    std::cout << "Enter the file name: ";
+                    std::cin >> filename;
+                    // Validate - Get data
+                    exit_code = file_count_lines(filename, lines_count);
+                    if (exit_code)
+                        return exit_code;
+                    exit_code = file_count_columns(filename, columns_count);
+                    if (exit_code)
+                        return exit_code;
+                    // Prepare data - Create Objects
+                    int rows_table = lines_count - 1;
+                    Matrix table_src(rows_table, degree + 2);
+                    Matrix newton_table_interval_x0(degree + 1, degree + 2);
+                    Matrix newton_table_interval_xN(degree + 1, degree + 2);
+                    std::vector<Spline> splines;
+                    // Parse file
+                    exit_code = file_parse_std(table_src, filename);
+                    if (exit_code)
+                        return exit_code;
+                    // Get arguments x0 and xN
+                    double x0 = table_src[0][0].value;
+                    double xN = table_src[table_src.get_rows() - 1][0].value;
+                    // ----- NEWTON (x0) -----
+                    compute_interval_std(table_src, newton_table_interval_x0, x0, degree);
+                    newton_init_vectors(newton_table_interval_x0);
+                    newton_compute_vectors(newton_table_interval_x0, degree);
+                    newton_compute_values(newton_table_interval_x0, degree);
+                    double newton_dxx_x0 = newton_compute_dxx(newton_table_interval_x0, x0);
+                    // ----- NEWTON (xN) -----
+                    compute_interval_std(table_src, newton_table_interval_xN, xN, degree);
+                    newton_init_vectors(newton_table_interval_xN);
+                    newton_compute_vectors(newton_table_interval_xN, degree);
+                    newton_compute_values(newton_table_interval_xN, degree);
+                    double newton_dxx_xN = newton_compute_dxx(newton_table_interval_xN, xN);
+                    // ----- SPLINE -----
+                    splines_init_vector(splines, table_src);
+                    splines_compute_h(splines);
+                    splines_compute_a(splines);
+                    splines_compute_xi(splines);
+                    splines_compute_eta(splines);
+                    splines_compute_c(splines, newton_dxx_x0, newton_dxx_xN);
+                    splines_compute_b(splines);
+                    splines_compute_bn(splines);
+                    splines_compute_d(splines);
+                    splines_compute_dn(splines);
+
+                    exit_code = spline_find(splines, x0, spline_index_x0);
+                    if (exit_code)
+                        return exit_code;
+                    exit_code = spline_find(splines, xN, spline_index_xN);
+                    if (exit_code)
+                        return exit_code;
+                    
+                    double y0 = splines[spline_index_x0].spline_interpolate(x0);
+                    double yN = splines[spline_index_xN].spline_interpolate(xN);
+
+                    std::cout << "y0: " << y0 << std::endl;
+                    std::cout << "yN: " << yN << std::endl;
                     break;
                 }
                 case 31:
                 {
+                    std::string filename;
+                    int lines_count;
+                    int columns_count;
+                    int spline_index;
+                    double x;
+                    int degree = 3;
+                    // Input
+                    std::cout << "Enter the file name: ";
+                    std::cin >> filename;
+                    std::cout << "Enter x: ";
+                    std::cin >> x;
+                    // Validate - Get data
+                    exit_code = file_count_lines(filename, lines_count);
+                    if (exit_code)
+                        return exit_code;
+                    exit_code = file_count_columns(filename, columns_count);
+                    if (exit_code)
+                        return exit_code;
+                    int rows_table = lines_count - 1;
+                    // Create objects
+                    Matrix table_src(rows_table, degree + 2);
+                    Matrix newton_table_interval(degree + 1, degree + 2);
+                    std::vector<Spline> splines;
+                    // Parse file
+                    exit_code = file_parse_std(table_src, filename);
+                    if (exit_code)
+                        return exit_code;
+                    // ----- NEWTON -----
+                    compute_interval_std(table_src, newton_table_interval, x, degree);
+                    newton_init_vectors(newton_table_interval);
+                    newton_compute_vectors(newton_table_interval, degree);
+                    newton_compute_values(newton_table_interval, degree);
+                    double y_newton = newton_interpolate(newton_table_interval, x, degree);
+                    std::cout << "y0: " << y_newton << std::endl;
+                    // ----- SPLINE -----
+                    splines_init_vector(splines, table_src);
+                    splines_compute_h(splines);
+                    splines_compute_a(splines);
+                    splines_compute_xi(splines);
+                    splines_compute_eta(splines);
+                    splines_compute_c(splines, 0, 0);
+                    splines_compute_b(splines);
+                    splines_compute_bn(splines);
+                    splines_compute_d(splines);
+                    splines_compute_dn(splines);
+                    exit_code = spline_find(splines, x, spline_index);
+                    if (exit_code)
+                        return exit_code;
+                    double y_spline = splines[spline_index].spline_interpolate(x);
+                    std::cout << "y0: " << y_spline << std::endl;
                     break;
                 }
                 default:

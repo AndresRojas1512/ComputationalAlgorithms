@@ -26,8 +26,8 @@ file_error_t file_parse_std(Matrix &matrix, const std::string &filename)
             fclose(file);
             return ERROR_PARSING;
         }
-        matrix[row][0] = x;
-        matrix[row][1] = y;
+        matrix[row][0].value = x;
+        matrix[row][1].value = y;
         row++;
     }
     fclose(file);

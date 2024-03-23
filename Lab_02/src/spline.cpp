@@ -150,8 +150,8 @@ void splines_init_vector(std::vector<Spline> &splines, Matrix &table_src) // DON
 {
     for (int i = 0; i < (table_src.get_rows() - 1); i++)
     {
-        Point l_point(table_src[i][0], table_src[i][1], i);
-        Point r_point(table_src[i + 1][0], table_src[i + 1][1], i + 1);
+        Point l_point(table_src[i][0].value, table_src[i][1].value, i);
+        Point r_point(table_src[i + 1][0].value, table_src[i + 1][1].value, i + 1);
         splines.push_back(Spline(l_point, r_point, i + 1));
     }
 }
@@ -187,26 +187,38 @@ void splines_compute_bn(std::vector<Spline> &splines) // DONE
     splines[splines.size() - 1].set_b(bn);
 }
 
-void splines_compute_c(std::vector<Spline> &splines) // DONE
+void splines_compute_c(std::vector<Spline> &splines, double boundary_x0, double boundary_xN)
 {
-    splines[0].set_c(0);
+    double c1;
+    double cNplus1;
+    // c1
+    if (std::abs(boundary_x0) < epsilon)
+        c1 = 0;
+    else
+        c1 = boundary_x0 / 2;
+    // cN+1
+    if (std::abs(boundary_xN) < epsilon)
+        cNplus1 = 0;
+    else
+        cNplus1 = boundary_xN / 2;
+    // Compute c
+    splines[0].set_c(c1);
     for (int i = (int)(splines.size() - 1); i >= 0; i--)
     {
         if (i == (int)(splines.size() - 1))
         {
-            // Xi_i+1
+            // Xi_i+1 (overflow)
             double Di = splines[i].get_h();
             double Bi = - ((2 * splines[i - 1].get_h()) + splines[i].get_h());
             double Ai = splines[i - 1].get_h();
             double xi_ovflow_spline = Di / (Bi - (Ai * splines[i].get_xi()));
 
-            // Eta_i+1
+            // Eta_i+1 (overflow)
             double Fi = 3 * (((splines[i].get_point_right().get_y() - splines[i - 1].get_point_right().get_y()) / splines[i].get_h()) - ((splines[i - 1].get_point_right().get_y() - splines[i - 1].get_point_left().get_y()) / splines[i - 1].get_h()));
             double eta_ovflow_spline = ((Fi + (Ai * splines[i].get_eta())) / (Bi - (Ai * splines[i].get_xi())));
 
-            // Compute Ui
-            double u_ovflow = 0;
-            double Ui = (xi_ovflow_spline * u_ovflow) - eta_ovflow_spline;
+            // Compute Ui (using overflow)
+            double Ui = (xi_ovflow_spline * cNplus1) - eta_ovflow_spline;
             splines[i].set_c(Ui);
         }
         else
