@@ -85,4 +85,6 @@ void splines_compute_eta(std::vector<Spline> &splines);
 
 void splines_print_xi_eta(std::vector<Spline> &splines);
 
+int spline_find(std::vector<Spline> &splines, double x, int &spline_index);
+
 #endif

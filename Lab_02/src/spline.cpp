@@ -204,7 +204,9 @@ void splines_compute_c(std::vector<Spline> &splines) // DONE
             double Fi = 3 * (((splines[i].get_point_right().get_y() - splines[i - 1].get_point_right().get_y()) / splines[i].get_h()) - ((splines[i - 1].get_point_right().get_y() - splines[i - 1].get_point_left().get_y()) / splines[i - 1].get_h()));
             double eta_ovflow_spline = ((Fi + (Ai * splines[i].get_eta())) / (Bi - (Ai * splines[i].get_xi())));
 
-            double Ui = (xi_ovflow_spline) * 0 - eta_ovflow_spline;
+            // Compute Ui
+            double u_ovflow = 0;
+            double Ui = (xi_ovflow_spline * u_ovflow) - eta_ovflow_spline;
             splines[i].set_c(Ui);
         }
         else
@@ -235,7 +237,6 @@ void splines_compute_xi(std::vector<Spline> &splines) // DONE
     splines[1].set_xi(0);
     for (unsigned long int i = 1; i < (splines.size() - 1); i++)
     {
-        std::cout << "Calculate values for: " << i + 1 << std::endl;
         double Di = splines[i].get_h();
         double Bi = - ((2 * splines[i - 1].get_h()) + splines[i].get_h());
         double Ai = splines[i - 1].get_h();
@@ -279,4 +280,21 @@ void splines_print_xi_eta(std::vector<Spline> &splines)
         spline.print_xi_eta();
         std::cout << std::endl;
     }
+}
+
+int spline_find(std::vector<Spline> &splines, double x, int &spline_index)
+{
+    int index = -1;
+    for (unsigned long int i = 0; i < splines.size(); i++)
+    {
+        if (x >= splines[i].get_point_left().get_x() && x <= splines[i].get_point_right().get_x())
+        {
+            index = i;
+        }
+    }
+    if (index == -1)
+        return EXIT_FAILURE;
+    else
+        spline_index = index;
+    return EXIT_SUCCESS;
 }

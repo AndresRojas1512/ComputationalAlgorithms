@@ -8,6 +8,6 @@
 
 void menu();
 void clean_buffer();
-int input_choice(int *choice);
+int input_choice(int &choice);
 
 #endif
