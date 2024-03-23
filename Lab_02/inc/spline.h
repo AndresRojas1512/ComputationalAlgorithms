@@ -81,9 +81,9 @@ void splines_compute_dn(std::vector<Spline> &splines);
 
 void splines_compute_h(std::vector<Spline> &splines);
 
-void splines_compute_xi(std::vector<Spline> &splines);
+void splines_compute_xi(std::vector<Spline> &splines, double boundary_condition);
 
-void splines_compute_eta(std::vector<Spline> &splines);
+void splines_compute_eta(std::vector<Spline> &splines, double boundary_condition);
 
 void splines_print_xi_eta(std::vector<Spline> &splines);
 

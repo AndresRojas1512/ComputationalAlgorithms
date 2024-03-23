@@ -51,8 +51,8 @@ int main(void)
                     splines_init_vector(splines, table_src);
                     splines_compute_h(splines);
                     splines_compute_a(splines);
-                    splines_compute_xi(splines);
-                    splines_compute_eta(splines);
+                    splines_compute_xi(splines, 0);
+                    splines_compute_eta(splines, 0);
                     splines_compute_c(splines, 0, 0);
                     splines_compute_b(splines);
                     splines_compute_bn(splines);
@@ -95,8 +95,8 @@ int main(void)
                     splines_init_vector(splines, table_src);
                     splines_compute_h(splines);
                     splines_compute_a(splines);
-                    splines_compute_xi(splines);
-                    splines_compute_eta(splines);
+                    splines_compute_xi(splines, 0);
+                    splines_compute_eta(splines, 0);
                     splines_compute_c(splines, 0, 0);
                     splines_compute_b(splines);
                     splines_compute_bn(splines);
@@ -157,8 +157,8 @@ int main(void)
                     splines_init_vector(splines, table_src);
                     splines_compute_h(splines);
                     splines_compute_a(splines);
-                    splines_compute_xi(splines);
-                    splines_compute_eta(splines);
+                    splines_compute_xi(splines, newton_dxx);
+                    splines_compute_eta(splines, newton_dxx);
                     splines_compute_c(splines, newton_dxx, 0);
                     splines_compute_b(splines);
                     splines_compute_bn(splines);
@@ -226,8 +226,8 @@ int main(void)
                     splines_init_vector(splines, table_src);
                     splines_compute_h(splines);
                     splines_compute_a(splines);
-                    splines_compute_xi(splines);
-                    splines_compute_eta(splines);
+                    splines_compute_xi(splines, newton_dxx_x0);
+                    splines_compute_eta(splines, newton_dxx_x0);
                     splines_compute_c(splines, newton_dxx_x0, newton_dxx_xN);
                     splines_compute_b(splines);
                     splines_compute_bn(splines);
@@ -289,8 +289,8 @@ int main(void)
                     splines_init_vector(splines, table_src);
                     splines_compute_h(splines);
                     splines_compute_a(splines);
-                    splines_compute_xi(splines);
-                    splines_compute_eta(splines);
+                    splines_compute_xi(splines, 0);
+                    splines_compute_eta(splines, 0);
                     splines_compute_c(splines, 0, 0);
                     splines_compute_b(splines);
                     splines_compute_bn(splines);

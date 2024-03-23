@@ -189,18 +189,8 @@ void splines_compute_bn(std::vector<Spline> &splines) // DONE
 
 void splines_compute_c(std::vector<Spline> &splines, double boundary_x0, double boundary_xN)
 {
-    double c1;
-    double cNplus1;
-    // c1
-    if (std::abs(boundary_x0) < epsilon)
-        c1 = 0;
-    else
-        c1 = boundary_x0 / 2;
-    // cN+1
-    if (std::abs(boundary_xN) < epsilon)
-        cNplus1 = 0;
-    else
-        cNplus1 = boundary_xN / 2;
+    double c1 = boundary_x0 / 2;
+    double cNplus1 = boundary_xN / 2;
     // Compute c
     splines[0].set_c(c1);
     for (int i = (int)(splines.size() - 1); i >= 0; i--)
@@ -244,9 +234,9 @@ void splines_compute_dn(std::vector<Spline> &splines) // DONE
     splines[splines.size() - 1].set_d(dn);
 }
 
-void splines_compute_xi(std::vector<Spline> &splines) // DONE
+void splines_compute_xi(std::vector<Spline> &splines, double boundary_condition) // DONE
 {
-    splines[1].set_xi(0);
+    splines[1].set_xi(boundary_condition / 2);
     for (unsigned long int i = 1; i < (splines.size() - 1); i++)
     {
         double Di = splines[i].get_h();
@@ -257,9 +247,9 @@ void splines_compute_xi(std::vector<Spline> &splines) // DONE
     }
 }
 
-void splines_compute_eta(std::vector<Spline> &splines) // DONE
+void splines_compute_eta(std::vector<Spline> &splines, double boundary_condition) // DONE
 {
-    splines[1].set_eta(0);
+    splines[1].set_eta(boundary_condition / 2);
     for (unsigned long int i = 1; i < (splines.size() - 1); i++)
     {
         double Fi = 3 * (((splines[i].get_point_right().get_y() - splines[i - 1].get_point_right().get_y()) / splines[i].get_h()) - ((splines[i - 1].get_point_right().get_y() - splines[i - 1].get_point_left().get_y()) / splines[i - 1].get_h()));
