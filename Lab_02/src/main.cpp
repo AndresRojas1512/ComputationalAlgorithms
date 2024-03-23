@@ -282,8 +282,9 @@ int main(void)
                     newton_init_vectors(newton_table_interval);
                     newton_compute_vectors(newton_table_interval, degree);
                     newton_compute_values(newton_table_interval, degree);
+                    newton_table_interval.print_cell_value();
                     double y_newton = newton_interpolate(newton_table_interval, x, degree);
-                    std::cout << "y0: " << y_newton << std::endl;
+                    std::cout << "Y Newton: " << y_newton << std::endl;
                     // ----- SPLINE -----
                     splines_init_vector(splines, table_src);
                     splines_compute_h(splines);
@@ -299,7 +300,7 @@ int main(void)
                     if (exit_code)
                         return exit_code;
                     double y_spline = splines[spline_index].spline_interpolate(x);
-                    std::cout << "y0: " << y_spline << std::endl;
+                    std::cout << "Y Spline: " << y_spline << std::endl;
                     break;
                 }
                 default:
