@@ -208,12 +208,12 @@ void splines_compute_c(std::vector<Spline> &splines, double boundary_x0, double 
             double eta_ovflow_spline = ((Fi + (Ai * splines[i].get_eta())) / (Bi - (Ai * splines[i].get_xi())));
 
             // Compute Ui (using overflow)
-            double Ui = (xi_ovflow_spline * cNplus1) - eta_ovflow_spline;
+            double Ui = (xi_ovflow_spline * cNplus1) + eta_ovflow_spline;
             splines[i].set_c(Ui);
         }
         else
         {
-            double Ui = (splines[i + 1].get_xi() * splines[i + 1].get_c()) - splines[i + 1].get_eta();
+            double Ui = (splines[i + 1].get_xi() * splines[i + 1].get_c()) + splines[i + 1].get_eta();
             splines[i].set_c(Ui);
         }
     }
