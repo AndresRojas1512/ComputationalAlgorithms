@@ -99,6 +99,6 @@ double newton_interpolate(const Matrix &newton_table, double x, int n)
 
 double newton_compute_dxx(const Matrix &newton_table, double x)
 {
-    double result = 2 * newton_table[0][3].value + 6 * newton_table[0][4].value * ((x - newton_table[1][0].value) + (x - newton_table[0][0].value));
+    double result = 2 * newton_table[0][3].value + newton_table[0][4].value * (6 * x - 2 * newton_table[2][0].value - 2 * newton_table[1][0].value - 2 * newton_table[0][0].value);
     return result;
 }
