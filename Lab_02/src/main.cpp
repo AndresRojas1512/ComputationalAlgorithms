@@ -63,7 +63,7 @@ int main(void)
                     std::cout << "Y: " << y << std::endl;
                     break;
                 }
-                case 21: // fi'')(x0) = 0 | fi''(xN) = 0
+                case 21: // fi''(x0) = 0 | fi''(xN) = 0 (Lecture)
                 {
                     std::string filename;
                     int lines_count;

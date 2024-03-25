@@ -1,38 +1,29 @@
 #include "newton.h"
 
-void compute_interval_std(const Matrix& input_matrix, Matrix& output_matrix, double x, int n)
-{
+void compute_interval_std(const Matrix& input_matrix, Matrix& output_matrix, double x, int n) {
     n += 1;
     int rows = input_matrix.get_rows();
     int best_start_index = 0;
     double min_diff = std::numeric_limits<double>::max();
+    bool found_in_range = false;
 
-    for (int i = 0; i <= rows - n; ++i)
-    {
+    for (int i = 0; i <= rows - n; ++i) {
         double left_value = input_matrix[i][0].value;
         double right_value = input_matrix[i + n - 1][0].value;
-        
+
         if (left_value <= x && x <= right_value)
         {
             double diff = std::abs((right_value - left_value) / 2 + left_value - x);
-            if (diff < min_diff)
+            if (!found_in_range || diff < min_diff)
             {
                 min_diff = diff;
                 best_start_index = i;
+                found_in_range = true; // Indicate that we've found an interval containing x.
             }
         }
-        else if (x < left_value)
+        else if (!found_in_range)
         {
-            double diff = left_value - x;
-            if (diff < min_diff)
-            {
-                min_diff = diff;
-                best_start_index = i;
-            }
-        }
-        else if (x > right_value)
-        {
-            double diff = x - right_value;
+            double diff = x < left_value ? left_value - x : x - right_value;
             if (diff < min_diff)
             {
                 min_diff = diff;
@@ -41,15 +32,15 @@ void compute_interval_std(const Matrix& input_matrix, Matrix& output_matrix, dou
         }
     }
 
+    // Construct the output matrix based on the best start index found.
     output_matrix = Matrix(n, input_matrix.get_cols());
-    for (int i = 0; i < n; ++i)
-    {
-        for (int j = 0; j < input_matrix.get_cols(); ++j)
-        {
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < input_matrix.get_cols(); ++j) {
             output_matrix[i][j] = input_matrix[best_start_index + i][j];
         }
     }
 }
+
 
 void newton_init_vectors(Matrix &matrix)
 {

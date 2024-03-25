@@ -135,7 +135,7 @@ void Spline::print_xi_eta()
 
 std::ostream &operator<<(std::ostream &out, Spline &spline)
 {
-    out << "I:" << spline.get_index() << " " << spline.get_point_left() << "-" << spline.get_point_right() << " H:" << spline.get_h() << " XI:" << spline.get_xi() << " ETA:" << spline.get_eta() << " C:";
+    out << "I:" << spline.get_index() << " " << spline.get_point_left() << "-" << spline.get_point_right() << " H:" << spline.get_h() << " XI:" << spline.get_xi() << " ETA:" << spline.get_eta() << " Coeffs:";
     for (long unsigned int i = 0; i < spline.get_coefficients().size(); i++)
     {
         out << spline.get_coefficients()[i] << " ";
