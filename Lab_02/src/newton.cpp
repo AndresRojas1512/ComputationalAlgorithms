@@ -1,6 +1,7 @@
 #include "newton.h"
 
-void compute_interval_std(const Matrix& input_matrix, Matrix& output_matrix, double x, int n) {
+void compute_interval_std(const Matrix& input_matrix, Matrix& output_matrix, double x, int n)
+{
     n += 1;
     int rows = input_matrix.get_rows();
     int best_start_index = 0;
@@ -18,7 +19,7 @@ void compute_interval_std(const Matrix& input_matrix, Matrix& output_matrix, dou
             {
                 min_diff = diff;
                 best_start_index = i;
-                found_in_range = true; // Indicate that we've found an interval containing x.
+                found_in_range = true; // found the interval containing x.
             }
         }
         else if (!found_in_range)
@@ -31,8 +32,7 @@ void compute_interval_std(const Matrix& input_matrix, Matrix& output_matrix, dou
             }
         }
     }
-
-    // Construct the output matrix based on the best start index found.
+    
     output_matrix = Matrix(n, input_matrix.get_cols());
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < input_matrix.get_cols(); ++j) {

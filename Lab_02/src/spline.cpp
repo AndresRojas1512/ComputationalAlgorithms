@@ -176,14 +176,14 @@ void splines_compute_b(std::vector<Spline> &splines) // DONE
 {
     for (unsigned long int i = 0; i < (splines.size() - 1); i++)
     {
-        double bi = ((splines[i].get_point_right().get_y() - splines[i].get_point_left().get_y()) / splines[i].get_h()) - 1/3 * splines[i].get_h() * (splines[i + 1].get_c() + 2 * splines[i].get_c());
+        double bi = ((splines[i].get_point_right().get_y() - splines[i].get_point_left().get_y()) / splines[i].get_h()) - 1.0/3.0 * splines[i].get_h() * (splines[i + 1].get_c() + 2 * splines[i].get_c());
         splines[i].set_b(bi);
     }
 }
 
 void splines_compute_bn(std::vector<Spline> &splines) // DONE
 {
-    double bn = ((splines[splines.size() - 1].get_point_right().get_y() - splines[splines.size() - 1].get_point_left().get_y()) / splines[splines.size() - 1].get_h()) - (2/3 * splines[splines.size() - 1].get_h() * splines[splines.size() - 1].get_c());
+    double bn = ((splines[splines.size() - 1].get_point_right().get_y() - splines[splines.size() - 1].get_point_left().get_y()) / splines[splines.size() - 1].get_h()) - (2.0/3.0 * splines[splines.size() - 1].get_h() * splines[splines.size() - 1].get_c());
     splines[splines.size() - 1].set_b(bn);
 }
 
@@ -199,7 +199,7 @@ void splines_compute_c(std::vector<Spline> &splines, double boundary_x0, double 
         {
             // Xi_i+1 (overflow)
             double Di = splines[i].get_h();
-            double Bi = - ((2 * splines[i - 1].get_h()) + splines[i].get_h());
+            double Bi = - (2 * (splines[i - 1].get_h()) + splines[i].get_h());
             double Ai = splines[i - 1].get_h();
             double xi_ovflow_spline = Di / (Bi - (Ai * splines[i].get_xi()));
 
@@ -240,7 +240,7 @@ void splines_compute_xi(std::vector<Spline> &splines, double boundary_condition)
     for (unsigned long int i = 1; i < (splines.size() - 1); i++)
     {
         double Di = splines[i].get_h();
-        double Bi = - ((2 * splines[i - 1].get_h()) + splines[i].get_h());
+        double Bi = - (2 * (splines[i - 1].get_h()) + splines[i].get_h());
         double Ai = splines[i - 1].get_h();
         double xi = Di / (Bi - (Ai * splines[i].get_xi()));
         splines[i + 1].set_xi(xi);
@@ -254,7 +254,7 @@ void splines_compute_eta(std::vector<Spline> &splines, double boundary_condition
     {
         double Fi = 3 * (((splines[i].get_point_right().get_y() - splines[i - 1].get_point_right().get_y()) / splines[i].get_h()) - ((splines[i - 1].get_point_right().get_y() - splines[i - 1].get_point_left().get_y()) / splines[i - 1].get_h()));
         double Ai = splines[i - 1].get_h();
-        double Bi = - ((2 * splines[i - 1].get_h()) + splines[i].get_h());
+        double Bi = - (2 * (splines[i - 1].get_h()) + splines[i].get_h());
         double eta = ((Fi + (Ai * splines[i].get_eta())) / (Bi - (Ai * splines[i].get_xi())));
         splines[i + 1].set_eta(eta);
     }
