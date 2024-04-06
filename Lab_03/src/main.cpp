@@ -29,8 +29,10 @@ int main(void)
                     Table table;
                     parseCSVToTable(filename, table);
                     table.init_zs();
-                    double result = newton_trilinear(1.5, 1.5, 1.5, 1, 1, 1, table);
-                    std::cout << "Result: " << result << std::endl;
+                    double result_newton = newton_trilinear(1.5, 1.5, 1.5, 1, 1, 1, table);
+                    double result_spline = spline_trilinear(1.5, 1.5, 1.5, table);
+                    std::cout << "Result Newton: " << result_newton << std::endl;
+                    std::cout << "Result Spline: " << result_spline << std::endl;
                     break;
                 }
                 case 21: // fi''(x0) = 0 | fi''(xN) = 0 (Lecture)
