@@ -31,8 +31,10 @@ int main(void)
                     table.init_zs();
                     double result_newton = newton_trilinear(1.5, 1.5, 1.5, 1, 1, 1, table);
                     double result_spline = spline_trilinear(1.5, 1.5, 1.5, table);
+                    double result_mixed = mixed_trilinear(1.5, 1.5, 1.5, 1, 1, 1, table);
                     std::cout << "Result Newton: " << result_newton << std::endl;
                     std::cout << "Result Spline: " << result_spline << std::endl;
+                    std::cout << "Result Mixed: " << result_mixed << std::endl;
                     break;
                 }
                 case 21: // fi''(x0) = 0 | fi''(xN) = 0 (Lecture)
