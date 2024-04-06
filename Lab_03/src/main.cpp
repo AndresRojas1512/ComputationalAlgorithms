@@ -5,6 +5,7 @@
 #include "spline.h"
 #include "newton.h"
 #include "table.h"
+#include "interpolatemd.h"
 #include "ui.h"
 
 int main(void)
@@ -27,7 +28,9 @@ int main(void)
                     std::cin >> filename;
                     Table table;
                     parseCSVToTable(filename, table);
-                    std::cout << table;
+                    table.init_zs();
+                    double result = newton_trilinear(1.5, 1.5, 1.5, 1, 1, 1, table);
+                    std::cout << "Result: " << result << std::endl;
                     break;
                 }
                 case 21: // fi''(x0) = 0 | fi''(xN) = 0 (Lecture)

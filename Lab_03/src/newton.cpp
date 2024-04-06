@@ -105,3 +105,12 @@ double newton_compute_dxx(const Matrix &newton_table, double x)
     double result = 2 * newton_table[0][3].value + newton_table[0][4].value * (6 * x - 2 * newton_table[2][0].value - 2 * newton_table[1][0].value - 2 * newton_table[0][0].value);
     return result;
 }
+
+void newton_init_from_vectors(Matrix &newton_table, std::vector<double> &x_vals, std::vector<double> &y_vals)
+{
+    for (unsigned long int i = 0; i < x_vals.size(); i++)
+    {
+        newton_table[i][X].value = x_vals[i];
+        newton_table[i][Y].value = y_vals[i];
+    }
+}

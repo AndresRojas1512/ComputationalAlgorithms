@@ -5,6 +5,14 @@ void Table::addLayer(const Layer& layer)
     layers.push_back(layer);
 }
 
+void Table::init_zs()
+{
+    for (unsigned int i = 0; i < layers.size(); i++)
+    {
+        z_vals.push_back(layers[i].z);
+    }
+}
+
 void parseCSVToTable(const std::string& filePath, Table& table)
 {
     std::ifstream file(filePath);
@@ -88,4 +96,11 @@ std::ostream &operator<<(std::ostream &out, Table &table)
     for (unsigned long int i = 0; i < table.layers.size(); i++)
         out << table.layers[i] << std::endl;
     return out;
+}
+
+void vector_print(std::vector<double> &vector)
+{
+    for (unsigned int i = 0; i < vector.size(); i++)
+        std::cout << vector[i] << " ";
+    std::cout << std::endl;
 }

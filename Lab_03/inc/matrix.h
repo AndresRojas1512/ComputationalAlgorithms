@@ -27,8 +27,6 @@ class Matrix
     public:
         Matrix(int r, int c);
         // Getters
-        Cell &get_cell(int row, int col);
-        const Cell &get_cell(int row, int col) const;
         int get_rows() const;
         int get_cols() const;
         void print_cell_value() const;

@@ -8,16 +8,6 @@ Matrix::Matrix(int r, int c) : rows(r), cols(c), data(r, std::vector<Cell>(c))
 {
 }
 
-Cell &Matrix::get_cell(int row, int col)
-{
-    return data[row][col];
-}
-
-const Cell &Matrix::get_cell(int row, int col) const
-{
-    return data[row][col];
-}
-
 int Matrix::get_rows() const
 {
     return rows;

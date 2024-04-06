@@ -1,5 +1,5 @@
 #ifndef TABLE_H
-#define TABLE_h
+#define TABLE_H
 
 #include <iostream>
 #include <vector>
@@ -22,12 +22,16 @@ class Layer
 class Table
 {
     public:
+        std::vector<double> z_vals;
         std::vector<Layer> layers;
 
         void addLayer(const Layer& layer);
+        void init_zs();
         friend std::ostream &operator<<(std::ostream &out, Table &table);
 };
 
 void parseCSVToTable(const std::string& filePath, Table& table);
+
+void vector_print(std::vector<double> &vector);
 
 #endif

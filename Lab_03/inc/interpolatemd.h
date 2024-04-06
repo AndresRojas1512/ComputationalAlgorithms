@@ -3,7 +3,12 @@
 
 #include "newton.h"
 #include "spline.h"
+#include "table.h"
 
-void newton_linear(double x, int xn,std::vector<double> &x_vector);
+double newton_linear(double x, int nx, std::vector<double> &x_vals, std::vector<double> &y_vals);
+
+double newton_bilinear(double x, double y, int nx, int ny, Layer &layer);
+
+double newton_trilinear(double x, double y, double z, int nx, int ny, int nz, Table &table);
 
 #endif

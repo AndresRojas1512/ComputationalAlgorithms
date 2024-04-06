@@ -23,4 +23,6 @@ double newton_interpolate(const Matrix &newton_table, double x, int n);
 
 double newton_compute_dxx(const Matrix &newton_table, double x);
 
+void newton_init_from_vectors(Matrix &newton_table, std::vector<double> &x_vals, std::vector<double> &y_vals);
+
 #endif
