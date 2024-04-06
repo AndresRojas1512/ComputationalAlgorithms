@@ -6,8 +6,8 @@
 #define ERROR_CHOICE_READ_UB 10
 #define ERROR_CHOICE_READ_RANGE 11
 
-void menu();
-void clean_buffer();
-int input_choice(int &choice);
+void input_vals(double &x, double &y, double &z);
+
+void input_degrees(int &nx, int &ny, int &nz);
 
 #endif

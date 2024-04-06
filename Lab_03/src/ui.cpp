@@ -27,3 +27,23 @@ void clean_buffer(void)
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
 }
+
+void input_vals(double &x, double &y, double &z)
+{
+    std::cout << "X: ";
+    std::cin >> x;
+    std::cout << "Y: ";
+    std::cin >> y;
+    std::cout << "Z: ";
+    std::cin >> z;
+}
+
+void input_degrees(int &nx, int &ny, int &nz)
+{
+    std::cout << "NX: ";
+    std::cin >> nx;
+    std::cout << "NY: ";
+    std::cin >> ny;
+    std::cout << "NZ: ";
+    std::cin >> nz;
+}
