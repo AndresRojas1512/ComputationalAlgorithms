@@ -113,3 +113,4 @@ void newton_init_from_vectors(Matrix &newton_table, std::vector<double> &x_vals,
         newton_table[i][Y].value = y_vals[i];
     }
 }
+

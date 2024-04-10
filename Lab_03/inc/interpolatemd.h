@@ -27,4 +27,10 @@ double mixed_bilinear(double x, double y, int nx, int ny, Layer &layer);
 
 double mixed_trilinear(double x, double y, double z, int nx, int ny, int nz, Table &table);
 
+// Compute regular grid configurarion
+
+void compute_vector_configuration(std::vector<double> &in_values, std::vector<double> &out_values, std::vector<int> &out_indices,double x, int n);
+
+void compute_table_configuration(Table &input_table, Table &output_table, double x, double y, double z, int nx, int ny, int nz);
+
 #endif

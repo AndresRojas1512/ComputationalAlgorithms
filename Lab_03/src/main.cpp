@@ -20,13 +20,19 @@ int main(void)
     input_vals(x, y, z);
     input_degrees(nx, ny, nz);
     Table table;
+    Table table_config;
     parseCSVToTable(filename, table);
     table.init_zs();
-    double result_newton = newton_trilinear(x, y, z, nx, ny, nz, table);
+    compute_table_configuration(table, table_config, x, y, z, nz, ny, nz);
+
+    double result_newton = newton_trilinear(x, y, z, nx, ny, nz, table_config);
+    // double result_newton = newton_trilinear(x, y, z, nx, ny, nz, table);
     double result_spline = spline_trilinear(x, y, z, table);
     double result_mixed = mixed_trilinear(x, y, z, nx, ny, nz, table);
+
     std::cout << "Result Newton: " << result_newton << std::endl;
     std::cout << "Result Spline: " << result_spline << std::endl;
     std::cout << "Result Mixed: " << result_mixed << std::endl;
+
     return 0;
 }

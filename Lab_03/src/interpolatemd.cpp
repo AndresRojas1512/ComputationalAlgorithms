@@ -146,3 +146,81 @@ double mixed_trilinear(double x, double y, double z, int nx, int ny, int nz, Tab
     // double result = newton_linear(z, nz, table.z_vals, results);
     return result;
 }
+
+void compute_vector_configuration(std::vector<double> &in_values, std::vector<double> &out_values, std::vector<int> &out_indices,double x, int n)
+{
+    n += 1;
+    int rows = in_values.size();
+    int best_start_index = 0;
+    double min_diff = std::numeric_limits<double>::max();
+    bool found_in_range = false;
+
+    for (int i = 0; i <= rows - n; ++i)
+    {
+        double left_value = in_values[i];
+        double right_value = in_values[i + n - 1];
+
+        if (left_value <= x && x <= right_value)
+        {
+            double diff = std::abs((right_value - left_value) / 2 + left_value - x);
+            if (!found_in_range || diff < min_diff)
+            {
+                min_diff = diff;
+                best_start_index = i;
+                found_in_range = true;
+            }
+        }
+        else if (!found_in_range)
+        {
+            double diff = x < left_value ? left_value - x : x - right_value;
+            if (diff < min_diff)
+            {
+                min_diff = diff;
+                best_start_index = i;
+            }
+        }
+    }
+    out_values.clear();
+    for (int i = 0; i < n; i++)
+    {
+        out_values.push_back(in_values[best_start_index + i]);
+        out_indices.push_back(best_start_index + i);
+    }
+}
+
+
+void compute_table_configuration(Table &input_table, Table &output_table, double x, double y, double z, int nx, int ny, int nz)
+{
+    std::vector<int> z_indices;
+    std::vector<double> z_config;
+    compute_vector_configuration(input_table.z_vals, z_config, z_indices, z, nz);
+
+    for (int z_index : z_indices)
+    {
+        Layer selected_layer = input_table.layers[z_index];
+
+        std::vector<double> x_config, y_config;
+        std::vector<int> x_indices, y_indices;
+        compute_vector_configuration(selected_layer.x_vals, x_config, x_indices, x, nx);
+        compute_vector_configuration(selected_layer.y_vals, y_config, y_indices, y, ny);
+
+        Layer new_layer;
+        new_layer.z = selected_layer.z;
+        new_layer.x_vals = x_config;
+        new_layer.y_vals = y_config;
+
+        new_layer.data.resize(y_config.size());
+        for (size_t i = 0; i < y_config.size(); ++i)
+        {
+            new_layer.data[i].resize(x_config.size());
+            for (size_t j = 0; j < x_config.size(); ++j)
+            {
+                int x_index = std::find(selected_layer.x_vals.begin(), selected_layer.x_vals.end(), x_config[j]) - selected_layer.x_vals.begin();
+                int y_index = std::find(selected_layer.y_vals.begin(), selected_layer.y_vals.end(), y_config[i]) - selected_layer.y_vals.begin();
+                new_layer.data[i][j] = selected_layer.data[y_index][x_index];
+            }
+        }
+        output_table.addLayer(new_layer);
+        output_table.z_vals.push_back(new_layer.z);
+    }
+}
