@@ -15,7 +15,7 @@ int main(void)
     std::string filename;
     double x, y, z;
     int nx, ny, nz;
-    std::cout << "Enter the file name: ";
+    std::cout << "File name: ";
     std::cin >> filename;
     input_vals(x, y, z);
     input_degrees(nx, ny, nz);

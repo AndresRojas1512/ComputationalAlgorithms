@@ -44,7 +44,6 @@ void compute_interval_std(const Matrix& input_matrix, Matrix& output_matrix, dou
     }
 }
 
-
 void newton_init_vectors(Matrix &matrix)
 {
     for (int i = 0; i < matrix.get_rows(); i++)

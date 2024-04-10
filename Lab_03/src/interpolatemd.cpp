@@ -4,6 +4,13 @@
 
 double newton_linear(double x, int nx, std::vector<double> &x_vals, std::vector<double> &y_vals)
 {
+    // Debug
+    // std::cout << "\tLinear:" << std::endl;
+    // std::cout << "X: ";
+    // vector_print(x_vals);
+    // std::cout << "Y: ";
+    // vector_print(y_vals);
+    // End debug
     int rows = x_vals.size();
     Matrix newton_table(rows, nx + 2);
     Matrix newton_table_interval(nx + 1, nx + 2);
@@ -18,19 +25,33 @@ double newton_linear(double x, int nx, std::vector<double> &x_vals, std::vector<
 
 double newton_bilinear(double x, double y, int nx, int ny, Layer &layer)
 {
+    // Debug
+    // std::cout << "\tBilinear:" << std::endl;
+    // std::cout << "Layer:" << std::endl;
+    // std::cout << layer;
+    // End debug
     std::vector<double> results;
     double result_iter;
     for (unsigned int i = 0; i < layer.y_vals.size(); i++)
     {
+        // std::cout << "Linear iter: " << i << std::endl;
         result_iter = newton_linear(x, nx, layer.x_vals, layer.data[i]);
         results.push_back(result_iter);
     }
+    // Debug
+    // std::cout << "Inter after cycle in 2d:" << std::endl;
+    // End debug
     double result = newton_linear(y, ny, layer.y_vals, results);
     return result;
 }
 
 double newton_trilinear(double x, double y, double z, int nx, int ny, int nz, Table &table)
 {
+    // Debug
+    // std::cout << "\tTrilinear:" << std::endl;
+    // std::cout << "Table:" << std::endl;
+    // std::cout << table;
+    // End debug
     std::vector<double> results;
     double result_iter;
     for (unsigned long int i = 0; i < table.layers.size(); i++)
@@ -38,6 +59,9 @@ double newton_trilinear(double x, double y, double z, int nx, int ny, int nz, Ta
         result_iter = newton_bilinear(x, y, nx, ny, table.layers[i]);
         results.push_back(result_iter);
     }
+    // Debug
+    // std::cout << "Inter after cycle in 3d:" << std::endl;
+    // End debug
     double result = newton_linear(z, nz, table.z_vals, results);
     return result;
 }
