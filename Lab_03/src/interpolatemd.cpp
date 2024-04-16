@@ -188,7 +188,6 @@ void compute_vector_configuration(std::vector<double> &in_values, std::vector<do
     }
 }
 
-
 void compute_table_configuration(Table &input_table, Table &output_table, double x, double y, double z, int nx, int ny, int nz)
 {
     std::vector<int> z_indices;
