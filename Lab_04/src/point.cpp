@@ -48,12 +48,12 @@ double Point::get_y()
 
 double Point::get_z()
 {
-    return z;
+    return this->z;
 }
 
 double Point::get_weight()
 {
-    return weight;
+    return this->weight;
 }
 
 std::ostream &operator<<(std::ostream &out, Point &point)
