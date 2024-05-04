@@ -17,13 +17,11 @@ class Point
         Point(double x_param, double y_param, double weight);
         Point(double x_param, double y_param, double z_param, double weight);
 
-        // Getters
         double get_x();
         double get_y();
         double get_z();
         double get_weight();
 
-        // Setters
         void set_x(double x_param);
         void set_y(double y_param);
         void set_z(double z_param);
