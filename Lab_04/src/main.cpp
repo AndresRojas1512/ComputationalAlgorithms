@@ -17,14 +17,14 @@ int main(void)
     std::vector<Point> grid;
     int exit_code = EXIT_SUCCESS;
 
-    exit_code = file_count_rows(rows, "data_1v.csv");
+    exit_code = file_count_rows(rows, "datasv_02.csv");
     if (exit_code)
         return exit_code;
-    exit_code = file_count_columns(columns, "data_1v.csv");
+    exit_code = file_count_columns(columns, "datasv_02.csv");
     if (exit_code)
         return exit_code;
     table = Table(rows, columns);
-    exit_code = file_parse_1v(table, "data_1v.csv");
+    exit_code = file_parse_1v(table, "datasv_02.csv");
     if (exit_code)
         return exit_code;
     points_1v_load(grid, table);
@@ -35,9 +35,7 @@ int main(void)
 
     Slae slae(nodes, nodes + 1);
     slae.compute_init(grid);
-    std::cout << slae;
-    std::cout << "Row echelon:" << std::endl;
-    slae.row_echelon();
-    std::cout << slae;
+    slae.lin_solve();
+    std::cout << slae.get_system_solution() << std::endl;
     return 0;
 }

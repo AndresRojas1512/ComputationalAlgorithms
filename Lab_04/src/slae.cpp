@@ -1,7 +1,22 @@
 #include "slae.h"
 
-Slae::Slae(int equations_n_param, int coefs_n_param) : rows_n(equations_n_param), cols_n(coefs_n_param), system(equations_n_param, Polynomial(coefs_n_param)), system_solution(equations_n_param)
+Slae::Slae(int equations_n_param, int coefs_n_param) : rows_n(equations_n_param), cols_n(coefs_n_param), system(equations_n_param, Polynomial(coefs_n_param)), system_solution(equations_n_param, 0.0)
 {
+}
+
+Slae::Slae(const Slae &other) : rows_n(other.rows_n), cols_n(other.cols_n), system(other.system), system_solution(other.system_solution)
+{
+}
+
+Slae &Slae::operator=(const Slae &other)
+{
+    if (this == &other)
+        return *this;
+    rows_n = other.rows_n;
+    cols_n = other.cols_n;
+    system = other.system;
+    system_solution = other.system_solution;
+    return *this;
 }
 
 int Slae::get_rows_n()
@@ -14,82 +29,96 @@ int Slae::get_cols_n()
     return cols_n;
 }
 
-double Slae::get_solution(int index) const
+const std::vector<double>& Slae::get_system_solution() const
 {
-    if (index < 0 || index >= rows_n)
-        throw std::out_of_range("Solution index out of range");
-    return system_solution[index];
-}
-void Slae::set_solution(int index, double value)
-{
-    if (index < 0 || index >= rows_n)
-        throw std::out_of_range("Solution index out of range");
-    system_solution[index] = value;
+    return system_solution;
 }
 
 void Slae::compute_init(std::vector<Point> &grid)
 {
-    double sum = 0.0;
+    double cumulative_sum = 0.0;
     for (int i = 0; i < rows_n; i++)
     {
         for (int j = 0; j < cols_n; j++)
         {
-            sum = 0.0;
+            cumulative_sum = 0.0;
             for (auto &point : grid)
             {
-                sum += point.get_weight() * std::pow(point.get_x(), i + j);
+                cumulative_sum += point.get_weight() * std::pow(point.get_x(), i + j);
             }
-            system[i][j] = sum;
+            system[i][j] = cumulative_sum;
         }
-        sum = 0;
+        cumulative_sum = 0.0;
         for (auto &point : grid)
         {
-            sum += point.get_weight() * point.get_y() * std::pow(point.get_x(), i);
+            cumulative_sum += point.get_weight() * point.get_y() * std::pow(point.get_x(), i);
         }
-        system[i][system.size()] = sum;
+        system[i][system.size()] = cumulative_sum;
     }
 }
 
-void Slae::row_echelon() // done
+void Slae::lin_solve()
 {
+    Slae row_echelon_matrix = this->row_echelon();
+    int num_rows = row_echelon_matrix.get_rows_n();
+    int num_cols = row_echelon_matrix.get_cols_n();
+    int start_row = num_rows - 1;
+    for (int i = start_row; i >= 0; i--)
+    {
+        double current_result = row_echelon_matrix[i][num_cols - 1];
+        double cumulative_sum = 0.0;
+        for (int j = i + 1; j < num_rows; j++)
+        {
+            cumulative_sum += row_echelon_matrix[i][j] * system_solution[j];
+        }
+        double final_answer = (current_result - cumulative_sum) / row_echelon_matrix[i][i];
+        system_solution[i] = final_answer;
+    }
+}
+
+Slae Slae::row_echelon()
+{
+    Slae row_echelon(*this);
+
     int c_row, c_col;
-    int max_count = 100;
+    int max_count = 100000;
     int count = 0;
     bool complete_flag = false;
     while ((!complete_flag) && (count < max_count))
     {
-        for (int diag_index = 0; diag_index < rows_n; diag_index++)
+        for (int diag_index = 0; diag_index < row_echelon.rows_n; diag_index++)
         {
             c_row = diag_index;
             c_col = diag_index;
 
-            for (int row_index = c_row + 1; row_index < rows_n; row_index++)
+            for (int row_index = c_row + 1; row_index < row_echelon.rows_n; row_index++)
             {
-                if (!(close_enough(system[row_index][c_col], 0.0)))
+                if (!(close_enough(row_echelon.system[row_index][c_col], 0.0)))
                  {
                     int row_one_index = c_col;
-                    double current_element_value = system[row_index][c_col];
-                    double row_one_value = system[row_one_index][c_col];
+                    double current_element_value = row_echelon.system[row_index][c_col];
+                    double row_one_value = row_echelon.system[row_one_index][c_col];
                     if (!(close_enough(row_one_value, 0.0)))
                     {
                         double correction_factor = - (current_element_value / row_one_value);
-                        mult_add(row_index, row_one_index, correction_factor);
+                        row_echelon.mult_add(row_index, row_one_index, correction_factor);
                     }
                 }
             }
         }
-        complete_flag = this->is_row_echelon();
+        complete_flag = row_echelon.is_row_echelon();
         count++;
     }
+    return row_echelon;
 }
 
-void Slae::mult_add(int i, int j, double mult_factor) // done
+void Slae::mult_add(int i, int j, double mult_factor)
 {
     for (int k = 0; k < cols_n; k++)
         system[i][k] += system[j][k] * mult_factor;
 }
 
-bool Slae::is_row_echelon() // done
+bool Slae::is_row_echelon()
 {
     double cumulative_sum = 0.0;
     for (int i = 1; i < rows_n; i++)
@@ -102,7 +131,7 @@ bool Slae::is_row_echelon() // done
     return cumulative_sum < epsilon;
 }
 
-bool Slae::close_enough(double v1, double v2) // done
+bool Slae::close_enough(double v1, double v2)
 {
     return fabs(v1 - v2) < epsilon;
 }
@@ -111,6 +140,13 @@ std::ostream &operator<<(std::ostream &out, Slae &slae)
 {
     for (auto &polynomial : slae.system)
         out << polynomial << std::endl;
+    return out;
+}
+
+std::ostream &operator<<(std::ostream &out, const std::vector<double> &system_solution)
+{
+    for (const auto &value : system_solution)
+        out << value << " ";
     return out;
 }
 
