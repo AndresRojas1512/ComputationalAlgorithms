@@ -61,3 +61,15 @@ std::ostream &operator<<(std::ostream &out, Point &point)
     out << "Point: (" << point.x << ", " << point.y << ", " << point.z << "), weight: " << point.weight;
     return out;
 }
+
+void points_1v_load(std::vector<Point> &points, Table &table)
+{
+    for (int i = 0; i < table.get_rows(); i++)
+        points.emplace_back(table[i][0], table[i][1], table[i][2]);
+}
+
+void points_2v_load(std::vector<Point> &points, Table &table)
+{
+    for (int i = 0; i < table.get_rows(); i++)
+        points.emplace_back(table[i][0], table[i][1], table[i][2], table[i][3]);
+}

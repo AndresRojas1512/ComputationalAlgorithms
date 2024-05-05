@@ -1,29 +1,24 @@
 #include "polynomial.h"
 
-Polynomial::Polynomial(int coefs_n_param) : coefs(coefs_n_param, 0.0)
+Polynomial::Polynomial(int coefs_n_param) : coefs_n(coefs_n_param), coefs(coefs_n_param, 0.0)
 {
 }
 
 int Polynomial::get_coefs_n()
 {
-    return coefs.size();
-}
-
-void Polynomial::set_coefs_n(int coefs_n_param)
-{
-    coefs.resize(coefs_n_param, 0.0);
+    return coefs_n;
 }
 
 double &Polynomial::operator[](int index)
 {
-    if (index < 0 || index >= static_cast<int>(coefs.size()))
-        throw std::out_of_range("Index out of range");
+    if (index < 0 || index >= coefs_n)
+        throw std::out_of_range("Polynomial index out of range");
     return coefs[index];
 }
 const double &Polynomial::operator[](int index) const
 {
-    if (index < 0 || index >= static_cast<int>(coefs.size()))
-        throw std::out_of_range("Index out of range");
+    if (index < 0 || index >= coefs_n)
+        throw std::out_of_range("Polynomial index out of range");
     return coefs[index];
 }
 

@@ -2,6 +2,8 @@
 #define POINT_H
 
 #include <iostream>
+#include <vector>
+#include "table.h"
 
 class Point
 {
@@ -27,5 +29,8 @@ class Point
         void set_z(double z_param);
         void set_weight(double weight_param);
 };
+
+void points_1v_load(std::vector<Point> &points, Table &table);
+void points_2v_load(std::vector<Point> &points, Table &table);
 
 #endif
