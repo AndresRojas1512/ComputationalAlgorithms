@@ -1,6 +1,8 @@
 #ifndef TABLE_H
 #define TABLE_H
 
+#include <string>
+#include <fstream>
 #include <iostream>
 #include <vector>
 
@@ -17,10 +19,13 @@ class Table
         int get_rows();
         int get_cols();
 
+        void append(const std::vector<double> &row);
+
         std::vector<double> &operator[](int index);
         const std::vector<double> &operator[](int index) const;
 
         void output();
+        void writeXY(const std::string &filename) const;
 };
 
 #endif

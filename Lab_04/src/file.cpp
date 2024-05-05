@@ -116,3 +116,4 @@ file_error_t file_count_columns(int &columns_count, const std::string &filename)
     fclose(file);
     return SUCCESS;
 }
+
