@@ -15,6 +15,7 @@ class Polynomial
     public:
         Polynomial() = default;
         explicit Polynomial(int n_coefs_param);
+        explicit Polynomial(const std::vector<double> &coefficients);
 
         int get_coefs_n();
 

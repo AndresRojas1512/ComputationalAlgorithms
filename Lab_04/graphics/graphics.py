@@ -30,7 +30,7 @@ def plot_experimental_and_approximation(exp_filename, approx_filename):
 
 if __name__ == "__main__":
     # Paths to the CSV files
-    experimental_file = '../datasv_02.csv'
+    experimental_file = '../datasv_01.csv'
     approximation_file = '../aproxfunction.csv'
     
     # Call the function with the file paths

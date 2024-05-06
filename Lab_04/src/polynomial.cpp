@@ -4,6 +4,10 @@ Polynomial::Polynomial(int coefs_n_param) : coefs_n(coefs_n_param), coefs(coefs_
 {
 }
 
+Polynomial::Polynomial(const std::vector<double> &coefficients) : coefs_n(coefficients.size()), coefs(coefficients)
+{
+}
+
 int Polynomial::get_coefs_n()
 {
     return coefs_n;

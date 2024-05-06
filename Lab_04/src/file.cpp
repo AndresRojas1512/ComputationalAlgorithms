@@ -64,7 +64,7 @@ file_error_t file_parse_2v(Table &table, const std::string &filename)
         table[row][0] = x;
         table[row][1] = y;
         table[row][2] = z;
-        table[row][2] = weight;
+        table[row][3] = weight;
         row++;
     }
     fclose(file);

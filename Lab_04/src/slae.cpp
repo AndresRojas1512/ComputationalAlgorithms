@@ -34,7 +34,7 @@ const std::vector<double>& Slae::get_system_solution() const
     return system_solution;
 }
 
-void Slae::compute_init(std::vector<Point> &grid)
+void Slae::compute_init_1v(std::vector<Point> &grid)
 {
     double cumulative_sum = 0.0;
     for (int i = 0; i < rows_n; i++)
@@ -54,6 +54,61 @@ void Slae::compute_init(std::vector<Point> &grid)
             cumulative_sum += point.get_weight() * point.get_y() * std::pow(point.get_x(), i);
         }
         system[i][system.size()] = cumulative_sum;
+    }
+}
+
+double getValue_2D(double x, double y, int i, int j)
+{
+    return std::pow(x, i) * std::pow(y, j);
+}
+
+void Slae::compute_init_2v(std::vector<Point> &grid, int n)
+{
+    std::vector<std::vector<double>> A;
+    std::vector<double> B;
+    for (int i = 0; i < (n + 1); i++)
+    {
+        for (int j = 0; j < (n + 1 - i); j++)
+        {
+            std::vector<double> cur_row;
+            for (int k = 0; k < (n + 1); k++)
+            {
+                for (int l = 0; l < (n + 1 - k); l++)
+                {
+                    double cumulative_sum_a = 0.0;
+                    for (auto &point : grid)
+                    {
+                        double x = point.get_x();
+                        double y = point.get_y();
+                        double weight = point.get_weight();
+                        cumulative_sum_a += getValue_2D(x, y, k + i, l + j) * weight;
+                    }
+                    cur_row.push_back(cumulative_sum_a);
+                }
+            }
+            A.push_back(cur_row);
+            double cumulative_sum_b = 0.0;
+            for (auto &point : grid)
+            {
+                double x = point.get_x();
+                double y = point.get_y();
+                double z = point.get_z();
+                double weight = point.get_weight();
+                cumulative_sum_b += getValue_2D(x, y, i, j) * z * weight;
+            }
+            B.push_back(cumulative_sum_b);
+        }
+    }
+    for (unsigned int i = 0; i < A.size(); i++)
+    {
+        A[i].push_back(B[i]);
+    }
+    for (unsigned int i = 0; i < A.size(); i++)
+    {
+        for (unsigned int j = 0; j < A[0].size(); j++)
+        {
+            system[i][j] = A[i][j];
+        }
     }
 }
 
@@ -162,4 +217,9 @@ const Polynomial &Slae::operator[](int index) const
     if (index < 0 || index >= static_cast<int>(system.size()))
         throw std::out_of_range("Polynomial index out of range");
     return system[index];
+}
+
+int compute_nodes_2v(int degree)
+{
+    return ((degree + 1) * (degree + 2)) / 2;
 }

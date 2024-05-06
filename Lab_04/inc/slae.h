@@ -25,7 +25,8 @@ class Slae
 
         Slae &operator=(const Slae &other);
 
-        void compute_init(std::vector<Point> &grid);
+        void compute_init_1v(std::vector<Point> &grid);
+        void compute_init_2v(std::vector<Point> &grid, int n);
 
         int get_rows_n();
         int get_cols_n();
@@ -42,5 +43,7 @@ class Slae
 };
 
 std::ostream &operator<<(std::ostream &out, const std::vector<double> &system_solution);
+
+int compute_nodes_2v(int degree);
 
 #endif
