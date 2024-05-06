@@ -28,6 +28,8 @@ class Slae
         void compute_init_1v(std::vector<Point> &grid);
         void compute_init_2v(std::vector<Point> &grid, int n);
 
+        void add_polynomial(Polynomial &polynomial);
+
         int get_rows_n();
         int get_cols_n();
         const std::vector<double> &get_system_solution() const;
@@ -37,6 +39,8 @@ class Slae
         bool is_row_echelon();
         void mult_add(int i, int j, double mult_factor);
         bool close_enough(double v1, double v2);
+
+        void fill_by_matrix(std::vector<std::vector<double>> &matrix);
 
         Polynomial &operator[](int index);
         const Polynomial &operator[](int index) const;

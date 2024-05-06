@@ -19,6 +19,17 @@ Slae &Slae::operator=(const Slae &other)
     return *this;
 }
 
+void Slae::fill_by_matrix(std::vector<std::vector<double>> &matrix)
+{
+    for (unsigned int i = 0; i < matrix.size(); i++)
+    {
+        for (unsigned int j = 0; j < matrix[0].size(); j++)
+        {
+            system[i][j] = matrix[i][j];
+        }
+    }
+}
+
 int Slae::get_rows_n()
 {
     return rows_n;
