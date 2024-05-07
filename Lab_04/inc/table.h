@@ -26,6 +26,8 @@ class Table
 
         void output();
         void writeXY(const std::string &filename) const;
+        void writeXYZ(const std::string &filename) const;
+
 };
 
 #endif

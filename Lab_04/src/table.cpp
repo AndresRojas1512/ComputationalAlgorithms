@@ -47,6 +47,28 @@ void Table::writeXY(const std::string &filename) const
     file.close();
 }
 
+void Table::writeXYZ(const std::string &filename) const
+{
+    std::ofstream file(filename);
+    if (!file.is_open())
+    {
+        throw std::runtime_error("Failed to open file for writing.");
+    }
+
+    file << "x,y,z\n";
+
+    for (int i = 0; i < rows; ++i)
+    {
+        if (data[i].size() >= 3)
+        {
+            file << data[i][0] << "," << data[i][1] << "," << data[i][2] << "\n";
+        }
+    }
+
+    file.close();
+}
+
+
 std::vector<double> &Table::operator[](int index)
 {
     return data[index];
