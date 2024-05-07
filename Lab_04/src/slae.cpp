@@ -30,6 +30,22 @@ void Slae::fill_by_matrix(std::vector<std::vector<double>> &matrix)
     }
 }
 
+void Slae::write_solution_csv(const std::string &filename) const
+{
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file for writing: " << filename << std::endl;
+        return;
+    }
+
+    for (const double& value : system_solution) {
+        file << value << "\n";
+    }
+
+    file.close();
+    std::cout << "System solution written to " << filename << std::endl;
+}
+
 int Slae::get_rows_n()
 {
     return rows_n;

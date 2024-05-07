@@ -25,9 +25,6 @@ class Table
         const std::vector<double> &operator[](int index) const;
 
         void output();
-        void writeXY(const std::string &filename) const;
-        void writeXYZ(const std::string &filename) const;
-
 };
 
 #endif

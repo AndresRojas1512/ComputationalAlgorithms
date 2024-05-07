@@ -8,7 +8,6 @@
 #include "file.h"
 #include "polynomial.h"
 #include "slae.h"
-#include "approxfunction.h"
 #include "ode.h"
 
 double f0(double x) { return 1 - x; }
@@ -26,48 +25,6 @@ double c4(double x) { return 12 * std::pow(x, 2) - 20 * std::pow(x, 3) + 5 * std
 int main(void)
 {
     // 2D
-    // std::string filename;
-    // int rows;
-    // int columns;
-    // int degree;
-    // int nodes;
-    // Table table;
-    // Table table_approx_function;
-    // std::pair<double, double> interval;
-    // std::vector<Point> grid;
-    // int exit_code = EXIT_SUCCESS;
-
-    // exit_code = file_count_rows(rows, "datasv_01.csv");
-    // if (exit_code)
-    //     return exit_code;
-    // exit_code = file_count_columns(columns, "datasv_01.csv");
-    // if (exit_code)
-    //     return exit_code;
-    // table = Table(rows, columns);
-    // exit_code = file_parse_1v(table, "datasv_01.csv"); // 1v
-    // // exit_code = file_parse_2v(table, "datasv_01.csv");
-    // if (exit_code)
-    //     return exit_code;
-    // points_1v_load(grid, table); // 1v
-    // // points_2v_load(grid, table); // 2v
-    // std::cout << "Input degree: ";
-    // std::cin >> degree;
-    // nodes = degree + 1;
-    // // nodes = ((degree + 1) * (degree + 2) / 2);
-    // std::cout << "Equations: " << nodes << std::endl;
-    // Slae slae(nodes, nodes + 1);
-    // // slae.compute_init_2v(grid, degree);
-    // slae.compute_init_1v(grid);
-    // slae.lin_solve();
-    // std::cout << "Solution:" << std::endl;
-    // std::cout << slae.get_system_solution() << std::endl;
-
-    // compute_interval_x(interval, table);
-    // std::cout << "[ " << interval.first << ", " << interval.second << " ]" << std::endl;
-    // compute_approxfunction_2d(slae.get_system_solution(), table_approx_function, interval, 100);
-    // table_approx_function.writeXY("aproxfunction2d.csv");
-
-    // 3D
     std::string filename;
     int rows;
     int columns;
@@ -75,39 +32,61 @@ int main(void)
     int nodes;
     Table table;
     Table table_approx_function;
-    std::pair<double, double> interval_x;
-    std::pair<double, double> interval_y;
+    std::pair<double, double> interval;
     std::vector<Point> grid;
     int exit_code = EXIT_SUCCESS;
 
-    exit_code = file_count_rows(rows, "datadv_01.csv");
+    exit_code = file_count_rows(rows, "datasv_01.csv");
     if (exit_code)
         return exit_code;
-    exit_code = file_count_columns(columns, "datadv_01.csv");
+    exit_code = file_count_columns(columns, "datasv_01.csv");
     if (exit_code)
         return exit_code;
     table = Table(rows, columns);
-    exit_code = file_parse_2v(table, "datadv_01.csv");
+    exit_code = file_parse_1v(table, "datasv_01.csv");
     if (exit_code)
         return exit_code;
-    points_2v_load(grid, table);
+    points_1v_load(grid, table);
     std::cout << "Input degree: ";
     std::cin >> degree;
-    nodes = ((degree + 1) * (degree + 2) / 2);
-    std::cout << "Equations: " << nodes << std::endl;
+    nodes = degree + 1;
     Slae slae(nodes, nodes + 1);
-    slae.compute_init_2v(grid, degree);
+    slae.compute_init_1v(grid);
     slae.lin_solve();
-    std::cout << "Solution:" << std::endl;
-    std::cout << slae.get_system_solution() << std::endl;
+    slae.write_solution_csv("solution_2d.csv");
 
-    compute_interval_x(interval_x, table);
-    compute_interval_y(interval_y, table);
+    // 3D
+    // std::string filename;
+    // int rows;
+    // int columns;
+    // int degree;
+    // int nodes;
+    // Table table;
+    // Table table_approx_function;
+    // std::pair<double, double> interval_x;
+    // std::pair<double, double> interval_y;
+    // std::vector<Point> grid;
+    // int exit_code = EXIT_SUCCESS;
 
-    std::cout << "Interval x: [" << interval_x.first << ", " << interval_x.second << "]" << std::endl;
-    std::cout << "Interval y: [" << interval_y.first << ", " << interval_y.second << "]" << std::endl;
-    compute_approxfunction_3d(slae.get_system_solution(), table_approx_function, interval_x, interval_y, 10, 10);
-    table_approx_function.writeXYZ("aproxfunction3d.csv");
+    // exit_code = file_count_rows(rows, "datadv_01.csv");
+    // if (exit_code)
+    //     return exit_code;
+    // exit_code = file_count_columns(columns, "datadv_01.csv");
+    // if (exit_code)
+    //     return exit_code;
+    // table = Table(rows, columns);
+    // exit_code = file_parse_2v(table, "datadv_01.csv");
+    // if (exit_code)
+    //     return exit_code;
+    // points_2v_load(grid, table);
+    // std::cout << "Input degree: ";
+    // std::cin >> degree;
+    // nodes = ((degree + 1) * (degree + 2) / 2);
+    // std::cout << "Equations: " << nodes << std::endl;
+    // Slae slae(nodes, nodes + 1);
+    // slae.compute_init_2v(grid, degree);
+    // slae.lin_solve();
+    // slae.write_solution_csv("solution_3d.csv");
 
     // ODE
     // std::vector<double> x_points = {0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1};

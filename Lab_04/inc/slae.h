@@ -6,6 +6,9 @@
 #include <vector>
 #include <stdexcept>
 #include <cmath>
+#include <fstream>
+#include <iostream>
+#include <string>
 
 const double epsilon = 1e-9;
 
@@ -41,6 +44,8 @@ class Slae
         bool close_enough(double v1, double v2);
 
         void fill_by_matrix(std::vector<std::vector<double>> &matrix);
+        void write_solution_csv(const std::string &filename) const;
+        
 
         Polynomial &operator[](int index);
         const Polynomial &operator[](int index) const;
