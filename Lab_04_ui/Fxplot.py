@@ -70,7 +70,7 @@ def getIntervalX(table):
 def draw_2d(solution_files, file_exp_function):
     points = read_csv_to_points_2d(file_exp_function)
     xMin, xMax = getIntervalX(points)
-    xValues = np.linspace(xMin, xMax, 40)
+    xValues = np.linspace(xMin, xMax, 1000)
 
     plt.figure(figsize=(10, 6))
     for file_solution in solution_files:

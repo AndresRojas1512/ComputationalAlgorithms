@@ -50,4 +50,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     Fxplot.py \
+    Zxyplot.py \
     odeplot.py

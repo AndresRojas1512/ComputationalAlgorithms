@@ -149,7 +149,7 @@ void MainWindow::saveTableToCSV() {
 
 void MainWindow::on_pushButtonSolveFx_clicked()
 {
-    std::string filename = "data.csv";
+    std::string filename = "/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/data.csv";
     int rows = 0;
     int columns = 0;
     Table table;
@@ -190,8 +190,9 @@ void MainWindow::on_pushButtonSolveFx_clicked()
         QMessageBox::warning(this, "Validation Error", "No degrees selected.");
         return;
     }
-
-    for (int degree : checked_degrees) {
+    for (int degree : checked_degrees)
+    {
+        std::cout << "degree: " << degree << ", rows: " << rows << std::endl;
         if (degree >= rows) {
             QMessageBox::warning(this, "Validation Error", "Degree must be less than the number of data points.");
             return;
@@ -236,11 +237,99 @@ void MainWindow::on_pushButtonSolveFx_clicked()
     qDebug() << "Started Python script for plotting solutions.";
 }
 
-
 void MainWindow::on_pushButtonSolveZxy_clicked()
 {
-    // todo
+    std::string filename = "/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/data.csv";
+    int rows = 0;
+    int columns = 0;
+    Table table;
+    std::vector<Point> grid;
+    int exit_code = EXIT_SUCCESS;
+
+    // Count rows and columns
+    exit_code = file_count_rows(rows, filename.c_str());
+    if (exit_code)
+        return;
+    exit_code = file_count_columns(columns, filename.c_str());
+    if (exit_code)
+        return;
+
+    table = Table(rows, columns);
+    exit_code = file_parse_2v(table, filename.c_str());
+    if (exit_code)
+        return;
+    points_2v_load(grid, table);
+
+    std::cout << "Loaded grid: " << std::endl;
+    for (auto &p : grid)
+        std::cout << p << std::endl;
+
+    // Validate the degree
+    // int max_degree = find_degree(rows);
+
+    // Collect checked degrees
+    std::vector<int> checked_degrees;
+    if (ui->checkBox_1->isChecked()) checked_degrees.push_back(1);
+    if (ui->checkBox_2->isChecked()) checked_degrees.push_back(2);
+    if (ui->checkBox_3->isChecked()) checked_degrees.push_back(3);
+    if (ui->checkBox_4->isChecked()) checked_degrees.push_back(4);
+    if (ui->checkBox_5->isChecked()) checked_degrees.push_back(5);
+    if (ui->checkBox_6->isChecked()) checked_degrees.push_back(6);
+    if (ui->checkBox_7->isChecked()) checked_degrees.push_back(7);
+    if (ui->checkBox_8->isChecked()) checked_degrees.push_back(8);
+    if (ui->checkBox_9->isChecked()) checked_degrees.push_back(9);
+    if (ui->checkBox_10->isChecked()) checked_degrees.push_back(10);
+
+    if (checked_degrees.empty()) {
+        QMessageBox::warning(this, "Validation Error", "No degrees selected.");
+        return;
+    }
+
+    // for (int degree : checked_degrees) {
+    //     if (degree >= max_degree) {
+    //         QMessageBox::warning(this, "Validation Error", "Degree must be less than the maximum possible degree.");
+    //         return;
+    //     }
+    // }
+
+    QStringList solutionFiles;
+    for (int degree : checked_degrees) {
+        int nodes = (((degree + 1) * (degree + 2)) / 2);
+        Slae slae(nodes, nodes + 1);
+        slae.compute_init_2v(grid, degree);
+        slae.lin_solve();
+        QString solutionFile = QString("/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/solution_%1d.csv").arg(degree);
+        slae.write_solution_csv(solutionFile.toStdString());
+        solutionFiles << solutionFile;
+    }
+
+    // Create the QProcess object
+    QProcess *process = new QProcess(this);
+
+    connect(process, &QProcess::finished, this, [this, process](int exitCode, QProcess::ExitStatus exitStatus) {
+        qDebug() << "Process finished with exit code" << exitCode << "and status" << exitStatus;
+        qDebug() << "Output:" << process->readAllStandardOutput();
+        process->deleteLater();  // Clean up the QProcess object once done
+    });
+
+    connect(process, &QProcess::errorOccurred, this, [this, process](QProcess::ProcessError error) {
+        qDebug() << "Process error:" << error << process->errorString();
+        process->deleteLater();  // Clean up the QProcess object on error
+    });
+
+    // Path to the Python interpreter and the script
+    QString pythonInterpreter = "python3";
+    QString pythonScript = "/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/Zxyplot.py";
+
+    // Start the process
+    QStringList arguments;
+    arguments << "/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/data.csv" << solutionFiles;
+    process->start(pythonInterpreter, QStringList() << pythonScript << arguments);
+
+    // No need to wait for the process to finish
+    qDebug() << "Started Python script for plotting solutions.";
 }
+
 
 // ODE SOLUTION
 
@@ -276,7 +365,7 @@ void MainWindow::on_pushButtonODE_clicked()
     slae_ode_2degree.lin_solve();
     std::cout << "ODE system 2 solution: " << std::endl;
     std::cout << slae_ode_2degree.get_system_solution() << std::endl;
-    slae_ode_2degree.write_solution_csv("solution_2m.csv");
+    slae_ode_2degree.write_solution_csv("/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/solution_2m.csv");
 
     GetApproximateODE(slae_ode_3degree, x_points, 3, funcs_3degree, coeffFuncs_3degree);
     slae_ode_3degree.lin_solve();
@@ -284,17 +373,17 @@ void MainWindow::on_pushButtonODE_clicked()
     std::cout << slae_ode_3degree;
     std::cout << "ODE system 3 solution: " << std::endl;
     std::cout << slae_ode_3degree.get_system_solution() << std::endl;
-    slae_ode_3degree.write_solution_csv("solution_3m.csv");
+    slae_ode_3degree.write_solution_csv("/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/solution_3m.csv");
 
     GetApproximateODE(slae_ode_4degree, x_points, 4, funcs_4degree, coeffFuncs_4degree);
     slae_ode_4degree.lin_solve();
     std::cout << "ODE system 4 solution: " << std::endl;
     std::cout << slae_ode_4degree.get_system_solution() << std::endl;
-    slae_ode_4degree.write_solution_csv("solution_4m.csv");
+    slae_ode_4degree.write_solution_csv("/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/solution_4m.csv");
 
-    QString solution2Path = "solution_2m.csv";
-    QString solution3Path = "solution_3m.csv";
-    QString solution4Path = "solution_4m.csv";
+    QString solution2Path = "/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/solution_2m.csv";
+    QString solution3Path = "/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/solution_3m.csv";
+    QString solution4Path = "/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/solution_4m.csv";
 
     QProcess *process = new QProcess(this);
 
@@ -315,7 +404,7 @@ void MainWindow::on_pushButtonODE_clicked()
 
     // Arguments to pass to the script
     QStringList arguments;
-    arguments << "solution_2m.csv" << "solution_3m.csv" << "solution_4m.csv";
+    arguments << "/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/solution_2m.csv" << "/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/solution_3m.csv" << "/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/solution_4m.csv";
 
     // Start the process
     process->start(pythonInterpreter, QStringList() << pythonScript << arguments);
