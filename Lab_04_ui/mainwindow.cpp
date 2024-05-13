@@ -2,8 +2,7 @@
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     connect(ui->tableWidget, &QTableWidget::itemChanged, this, &MainWindow::saveTableToCSV);
@@ -14,6 +13,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
 
 void MainWindow::on_pushButtonGenerateTable_clicked() {
     // Get the number of points to generate
@@ -102,7 +102,7 @@ void MainWindow::on_pushButtonSetAllWeightsSame_clicked()
 }
 
 void MainWindow::saveTableToCSV() {
-    QString filePath = "/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04/data.csv";
+    QString filePath = "/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/data.csv";
     QFile file(filePath);
     if (file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -146,3 +146,131 @@ void MainWindow::saveTableToCSV() {
         qDebug() << "Failed to open file for writing: " << filePath;
     }
 }
+
+void MainWindow::on_pushButton_clicked() {
+    Py_Initialize();
+    PyRun_SimpleString("print('Hello from Python')");
+    Py_Finalize();
+}
+
+
+void MainWindow::on_pushButtonSolveFx_clicked()
+{
+    std::string filename;
+    int rows;
+    int columns;
+    int degree;
+    int nodes;
+    Table table;
+    Table table_approx_function;
+    std::pair<double, double> interval;
+    std::vector<Point> grid;
+    int exit_code = EXIT_SUCCESS;
+    exit_code = file_count_rows(rows, "data.csv");
+    if (exit_code)
+        return;
+    exit_code = file_count_columns(columns, "data.csv");
+    if (exit_code)
+        return;
+    table = Table(rows, columns);
+    exit_code = file_parse_1v(table, "data.csv");
+    if (exit_code)
+        return;
+    points_1v_load(grid, table);
+    std::cout << "Input degree: ";
+    std::cin >> degree;
+    nodes = degree + 1;
+    Slae slae(nodes, nodes + 1);
+    slae.compute_init_1v(grid);
+    slae.lin_solve();
+    slae.write_solution_csv("solution_2d.csv");
+}
+
+
+void MainWindow::on_pushButtonSolveZxy_clicked()
+{
+
+}
+
+// ODE SOLUTION
+
+double f0(double x) { return 1 - x; }
+double f1(double x) { return x * (1 - x); }
+double f2(double x) { return std::pow(x, 2) * (1 - x); }
+double f3(double x) { return std::pow(x, 3) * (1 - x); }
+double f4(double x) { return std::pow(x, 4) * (1 - x); }
+
+double c0(double x) { return 1 - (4 * x); }
+double c1(double x) { return -2 + 2 * x - 3 * std::pow(x, 2); }
+double c2(double x) { return 2 - 6 * x + 3 * std::pow(x, 2) - 4 * std::pow(x, 3); }
+double c3(double x) { return 6 * x - 12 * std::pow(x, 2) + 4 * std::pow(x, 3) - 5 * std::pow(x, 4); }
+double c4(double x) { return 12 * std::pow(x, 2) - 20 * std::pow(x, 3) + 5 * std::pow(x, 4) + 6 * std::pow(x, 5); }
+
+void MainWindow::on_pushButtonODE_clicked()
+{
+    std::vector<double> x_points = {0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1};
+    std::vector<Func> funcs_2degree = {f0, f1, f2};
+    std::vector<Func> coeffFuncs_2degree = {c0, c1, c2};
+
+    std::vector<Func> funcs_3degree = {f0, f1, f2, f3};
+    std::vector<Func> coeffFuncs_3degree = {c0, c1, c2, c3};
+
+    std::vector<Func> funcs_4degree = {f0, f1, f2, f3, f4};
+    std::vector<Func> coeffFuncs_4degree = {c0, c1, c2, c3, c4};
+
+    Slae slae_ode_2degree(2, 2 + 1);
+    Slae slae_ode_3degree(3, 3 + 1);
+    Slae slae_ode_4degree(4, 4 + 1);
+
+    GetApproximateODE(slae_ode_2degree, x_points, 2, funcs_2degree, coeffFuncs_2degree);
+    slae_ode_2degree.lin_solve();
+    std::cout << "ODE system 2 solution: " << std::endl;
+    std::cout << slae_ode_2degree.get_system_solution() << std::endl;
+    slae_ode_2degree.write_solution_csv("solution_2m.csv");
+
+    GetApproximateODE(slae_ode_3degree, x_points, 3, funcs_3degree, coeffFuncs_3degree);
+    slae_ode_3degree.lin_solve();
+    std::cout << "Slae 3m: " << std::endl;
+    std::cout << slae_ode_3degree;
+    std::cout << "ODE system 3 solution: " << std::endl;
+    std::cout << slae_ode_3degree.get_system_solution() << std::endl;
+    slae_ode_3degree.write_solution_csv("solution_3m.csv");
+
+    GetApproximateODE(slae_ode_4degree, x_points, 4, funcs_4degree, coeffFuncs_4degree);
+    slae_ode_4degree.lin_solve();
+    std::cout << "ODE system 4 solution: " << std::endl;
+    std::cout << slae_ode_4degree.get_system_solution() << std::endl;
+    slae_ode_4degree.write_solution_csv("solution_4m.csv");
+
+    QString solution2Path = "solution_2m.csv";
+    QString solution3Path = "solution_3m.csv";
+    QString solution4Path = "solution_4m.csv";
+
+    QProcess *process = new QProcess(this);
+
+    connect(process, &QProcess::finished, this, [this, process](int exitCode, QProcess::ExitStatus exitStatus) {
+        qDebug() << "Process finished with exit code" << exitCode << "and status" << exitStatus;
+        qDebug() << "Output:" << process->readAllStandardOutput();
+        process->deleteLater();  // Clean up the QProcess object once done
+    });
+
+    connect(process, &QProcess::errorOccurred, this, [this, process](QProcess::ProcessError error) {
+        qDebug() << "Process error:" << error << process->errorString();
+        process->deleteLater();  // Clean up the QProcess object on error
+    });
+
+    // Path to the Python interpreter and the script
+    QString pythonInterpreter = "python3";
+    QString pythonScript = "/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/odeplot.py";
+
+    // Arguments to pass to the script
+    QStringList arguments;
+    arguments << "solution_2m.csv" << "solution_3m.csv" << "solution_4m.csv";
+
+    // Start the process
+    process->start(pythonInterpreter, QStringList() << pythonScript << arguments);
+
+    // No need to wait for the process to finish
+    qDebug() << "Started Python script for plotting ODE solutions.";
+}
+

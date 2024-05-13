@@ -4,16 +4,41 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
 
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+# Include Python headers
+INCLUDEPATH += /usr/include/python3.10
+
+# Include your custom headers
+# INCLUDEPATH += /home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04/inc
+
+# Include Boost headers
+INCLUDEPATH += /home/andres/BoostCpp/boost_1_85_0
+
+# Link against the Python library
+LIBS += -lpython3.10
+
+# Link against Boost libraries
+LIBS += -L/home/andres/BoostCpp/boost_1_85_0/stage/lib -lboost_math_c99
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    mfile.cpp \
+    ode.cpp \
+    point.cpp \
+    polynomial.cpp \
+    slae.cpp \
+    table.cpp
+
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    mfile.h \
+    ode.h \
+    point.h \
+    polynomial.h \
+    slae.h \
+    table.h
+
 
 FORMS += \
     mainwindow.ui
@@ -22,3 +47,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    odeplot.py
