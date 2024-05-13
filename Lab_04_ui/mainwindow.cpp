@@ -147,49 +147,99 @@ void MainWindow::saveTableToCSV() {
     }
 }
 
-void MainWindow::on_pushButton_clicked() {
-    Py_Initialize();
-    PyRun_SimpleString("print('Hello from Python')");
-    Py_Finalize();
-}
-
-
 void MainWindow::on_pushButtonSolveFx_clicked()
 {
-    std::string filename;
-    int rows;
-    int columns;
-    int degree;
-    int nodes;
+    std::string filename = "data.csv";
+    int rows = 0;
+    int columns = 0;
     Table table;
-    Table table_approx_function;
-    std::pair<double, double> interval;
     std::vector<Point> grid;
     int exit_code = EXIT_SUCCESS;
-    exit_code = file_count_rows(rows, "data.csv");
+
+    // Count rows and columns
+    exit_code = file_count_rows(rows, filename.c_str());
     if (exit_code)
         return;
-    exit_code = file_count_columns(columns, "data.csv");
+    exit_code = file_count_columns(columns, filename.c_str());
     if (exit_code)
         return;
+
     table = Table(rows, columns);
-    exit_code = file_parse_1v(table, "data.csv");
+    exit_code = file_parse_1v(table, filename.c_str());
     if (exit_code)
         return;
     points_1v_load(grid, table);
-    std::cout << "Input degree: ";
-    std::cin >> degree;
-    nodes = degree + 1;
-    Slae slae(nodes, nodes + 1);
-    slae.compute_init_1v(grid);
-    slae.lin_solve();
-    slae.write_solution_csv("solution_2d.csv");
+
+    // Validate the degree
+    int max_degree = rows - 1;
+
+    // Collect checked degrees
+    std::vector<int> checked_degrees;
+    if (ui->checkBox_1->isChecked()) checked_degrees.push_back(1);
+    if (ui->checkBox_2->isChecked()) checked_degrees.push_back(2);
+    if (ui->checkBox_3->isChecked()) checked_degrees.push_back(3);
+    if (ui->checkBox_4->isChecked()) checked_degrees.push_back(4);
+    if (ui->checkBox_5->isChecked()) checked_degrees.push_back(5);
+    if (ui->checkBox_6->isChecked()) checked_degrees.push_back(6);
+    if (ui->checkBox_7->isChecked()) checked_degrees.push_back(7);
+    if (ui->checkBox_8->isChecked()) checked_degrees.push_back(8);
+    if (ui->checkBox_9->isChecked()) checked_degrees.push_back(9);
+    if (ui->checkBox_10->isChecked()) checked_degrees.push_back(10);
+
+    if (checked_degrees.empty()) {
+        QMessageBox::warning(this, "Validation Error", "No degrees selected.");
+        return;
+    }
+
+    for (int degree : checked_degrees) {
+        if (degree >= rows) {
+            QMessageBox::warning(this, "Validation Error", "Degree must be less than the number of data points.");
+            return;
+        }
+    }
+
+    QStringList solutionFiles;
+    for (int degree : checked_degrees) {
+        int nodes = degree + 1;
+        Slae slae(nodes, nodes + 1);
+        slae.compute_init_1v(grid);
+        slae.lin_solve();
+        QString solutionFile = QString("/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/solution_%1d.csv").arg(degree);
+        slae.write_solution_csv(solutionFile.toStdString());
+        solutionFiles << solutionFile;
+    }
+
+    // Create the QProcess object
+    QProcess *process = new QProcess(this);
+
+    connect(process, &QProcess::finished, this, [this, process](int exitCode, QProcess::ExitStatus exitStatus) {
+        qDebug() << "Process finished with exit code" << exitCode << "and status" << exitStatus;
+        qDebug() << "Output:" << process->readAllStandardOutput();
+        process->deleteLater();  // Clean up the QProcess object once done
+    });
+
+    connect(process, &QProcess::errorOccurred, this, [this, process](QProcess::ProcessError error) {
+        qDebug() << "Process error:" << error << process->errorString();
+        process->deleteLater();  // Clean up the QProcess object on error
+    });
+
+    // Path to the Python interpreter and the script
+    QString pythonInterpreter = "python3";
+    QString pythonScript = "/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/Fxplot.py";
+
+    // Start the process
+    QStringList arguments;
+    arguments << "/home/andres/Desktop/4Semester/CA/ComputationalAlgorithms/Lab_04_ui/data.csv" << solutionFiles;
+    process->start(pythonInterpreter, QStringList() << pythonScript << arguments);
+
+    // No need to wait for the process to finish
+    qDebug() << "Started Python script for plotting solutions.";
 }
 
 
 void MainWindow::on_pushButtonSolveZxy_clicked()
 {
-
+    // todo
 }
 
 // ODE SOLUTION

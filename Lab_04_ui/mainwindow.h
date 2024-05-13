@@ -13,6 +13,7 @@
 #include <iostream>
 #include <QProcess>
 #include <QDebug>
+#include <QMessageBox>
 #include "mfile.h"
 #include "ode.h"
 #include "point.h"
@@ -35,17 +36,11 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void saveTableToCSV();
-    void initializePython();  // Initialize Python dynamically
-
-    void (*pyInitialize)();
-    int (*pyRun_SimpleString)(const char *);
 
 private slots:
     void on_pushButtonGenerateTable_clicked();
 
     void on_pushButtonSetAllWeightsSame_clicked();
-
-    void on_pushButton_clicked();
 
     void on_pushButtonSolveFx_clicked();
 
