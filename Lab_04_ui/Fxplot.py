@@ -74,8 +74,8 @@ def draw_2d(solution_files, file_exp_function):
 
     plt.figure(figsize=(10, 6))
     for file_solution in solution_files:
-        degree = int(file_solution.split('_')[1][0])
         solution = read_csv_to_solution(file_solution)
+        degree = len(solution) - 1;
         yValues = [approximate_function_2d(solution, x) for x in xValues]
         plt.plot(xValues, yValues, label=f"Degree {degree} Approximation")
 

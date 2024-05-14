@@ -109,6 +109,44 @@ def parseTableToCoordinates3D(points):
         zs.append(p.getZ())
     return np.array(xs), np.array(ys), np.array(zs)
 
+# def draw_3d(solution_files, file_exp_function):
+#     points = read_csv_to_points_3d(file_exp_function)
+#     minX, maxX = getIntervalX(points)
+#     minY, maxY = getIntervalY(points)
+#     xValues = np.linspace(minX, maxX, 40)
+#     yValues = np.linspace(minY, maxY, 40)
+
+#     fig = plt.figure("3D Approximation Functions")
+#     axes = fig.add_subplot(projection='3d')
+
+#     # List to hold custom legend entries
+#     legend_elements = []
+
+#     for file_solution in solution_files:
+#         solution = read_csv_to_solution(file_solution)
+#         degree = find_degree(len(solution))
+
+#         xGrid, yGrid = np.meshgrid(xValues, yValues)
+#         zGrid = np.array([[approximate_function_3d(solution, degree, x, y) for x, y in zip(xRow, yRow)] for xRow, yRow in zip(xGrid, yGrid)])
+
+#         # Plot each surface
+#         surf = axes.plot_surface(xGrid, yGrid, zGrid, alpha=0.5)
+
+#         # Create a legend entry for this surface
+#         legend_elements.append(Line2D([0], [0], linestyle="none", marker="o", alpha=0.5, markersize=10, markerfacecolor=surf.get_facecolor()[0], label=f'Degree {degree}'))
+
+#     xpoints, ypoints, zpoints = parseTableToCoordinates3D(points)
+#     axes.scatter(xpoints, ypoints, zpoints, c='red', label='Data Points')
+
+#     axes.set_xlabel('X')
+#     axes.set_ylabel('Y')
+#     axes.set_zlabel('Z')
+
+#     # Add legend manually
+#     axes.legend(handles=legend_elements, loc='upper right')
+
+#     plt.show()
+
 def draw_3d(solution_files, file_exp_function):
     points = read_csv_to_points_3d(file_exp_function)
     minX, maxX = getIntervalX(points)
@@ -140,6 +178,7 @@ def draw_3d(solution_files, file_exp_function):
 
         xGrid, yGrid, zGrid = make_2D_matrix()
         axes.plot_surface(xGrid, yGrid, zGrid, alpha=0.5, label=f"Degree {degree} Approximation")
+
 
     xpoints, ypoints, zpoints = parseTableToCoordinates3D(points)
     axes.scatter(xpoints, ypoints, zpoints, c='red')
