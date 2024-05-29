@@ -2,6 +2,7 @@ import numpy as np
 import sympy as sym
 from newton import *
 from laplace import *
+from de import *
 import matplotlib.pyplot as plt
 
 def main():
@@ -26,7 +27,8 @@ def main():
     # Task 2
     print("\tЗадание 2")
     value = float(input("Значение функции: "))
-    print("Аргумент функции: ", bisect(lambda x : laplace(x) - value, 0, 10))
+    argument = bisection(laplace, value, 0, 10, maxIter=100, epsilon=1e-6)
+    print("Аргумент функции: ", argument)
 
     # Task 3
     print("\tЗадание 3")
